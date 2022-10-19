@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.gradle.testbase
 
+import org.gradle.api.logging.LogLevel
 import org.gradle.testkit.runner.BuildResult
 
 /**
@@ -16,6 +17,18 @@ fun BuildResult.assertOutputContains(
     assert(output.contains(expectedSubString)) {
         printBuildOutput()
         "Build output does not contain \"$expectedSubString\""
+    }
+}
+
+/**
+ * Asserts Gradle output contains any of [expectedSubString] strings.
+ */
+fun BuildResult.assertOutputContainsAny(
+    vararg expectedSubStrings: String
+) {
+    assert(expectedSubStrings.any { output.contains(it) }) {
+        printBuildOutput()
+        "Build output does not contain any of \"$expectedSubStrings\""
     }
 }
 
@@ -177,4 +190,14 @@ fun BuildResult.assertKotlinDaemonJvmOptions(
 
 fun BuildResult.assertBuildReportPathIsPrinted() {
     assertOutputContains("Kotlin build report is written to file://")
+}
+
+/**
+ * Asserts that [org.jetbrains.kotlin.gradle.plugin.KotlinGradleBuildServices] is successfully initialized and then disposed.
+ *
+ * Requires using [LogLevel.DEBUG].
+ */
+fun BuildResult.assertKotlinGradleBuildServicesAreInitialized() {
+    assertOutputContainsExactTimes("Initialized KotlinGradleBuildServices", expectedRepetitionTimes = 1)
+    assertOutputContainsExactTimes("Disposed KotlinGradleBuildServices", expectedRepetitionTimes = 1)
 }
