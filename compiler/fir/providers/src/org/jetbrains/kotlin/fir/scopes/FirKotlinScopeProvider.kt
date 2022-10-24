@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.FirSessionComponent
 import org.jetbrains.kotlin.fir.declarations.FirClass
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
-import org.jetbrains.kotlin.fir.declarations.utils.classId
 import org.jetbrains.kotlin.fir.declarations.utils.delegateFields
 import org.jetbrains.kotlin.fir.declarations.utils.isExpect
 import org.jetbrains.kotlin.fir.resolve.*
@@ -109,19 +108,20 @@ fun FirClassSymbol<*>.unsubstitutedScope(
 fun FirClass.scopeForClass(
     substitutor: ConeSubstitutor,
     useSiteSession: FirSession,
-    scopeSession: ScopeSession
+    scopeSession: ScopeSession,
 ): FirTypeScope = scopeForClassImpl(
     substitutor, useSiteSession, scopeSession,
     skipPrivateMembers = false,
     classFirDispatchReceiver = this,
     // TODO: why it's always false?
-    isFromExpectClass = false
+    isFromExpectClass = false,
+    derivedClass = null
 )
 
 fun ConeKotlinType.scopeForSupertype(
     useSiteSession: FirSession,
     scopeSession: ScopeSession,
-    subClass: FirClass,
+    derivedClass: FirClass,
 ): FirTypeScope? {
     if (this !is ConeClassLikeType) return null
     if (this is ConeErrorType) return null
@@ -132,8 +132,9 @@ fun ConeKotlinType.scopeForSupertype(
             useSiteSession,
             scopeSession,
             skipPrivateMembers = true,
-            classFirDispatchReceiver = subClass,
-            isFromExpectClass = (subClass as? FirRegularClass)?.isExpect == true
+            classFirDispatchReceiver = derivedClass,
+            isFromExpectClass = (derivedClass as? FirRegularClass)?.isExpect == true,
+            derivedClass = derivedClass.symbol.toLookupTag()
         )
     } else {
         null
@@ -152,7 +153,8 @@ private fun FirClass.scopeForClassImpl(
     scopeSession: ScopeSession,
     skipPrivateMembers: Boolean,
     classFirDispatchReceiver: FirClass,
-    isFromExpectClass: Boolean
+    isFromExpectClass: Boolean,
+    derivedClass: ConeClassLikeLookupTag?
 ): FirTypeScope {
     val basicScope = unsubstitutedScope(useSiteSession, scopeSession, withForcedTypeCalculator = false)
     if (substitutor == ConeSubstitutor.Empty) return basicScope
@@ -167,7 +169,8 @@ private fun FirClass.scopeForClassImpl(
             key, substitutor,
             substitutor.substituteOrSelf(classFirDispatchReceiver.defaultType()) as ConeClassLikeType,
             skipPrivateMembers,
-            makeExpect = isFromExpectClass
+            isFromExpectClass,
+            derivedClass ?: classFirDispatchReceiver.symbol.toLookupTag()
         )
     }
 }
