@@ -9,18 +9,18 @@ import org.jetbrains.kotlin.ir.IrBuiltIns
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 
-internal interface UnlinkedMarkerTypeHandler {
-    val unlinkedMarkerType: IrType
-    fun IrType.isUnlinkedMarkerType(): Boolean
+internal interface PartiallyLinkedIrMarkerTypeHandler {
+    val markerType: IrType
+    fun isMarkerType(type: IrType): Boolean
 }
 
-internal class UnlinkedMarkerTypeHandlerImpl(builtIns: IrBuiltIns) : UnlinkedMarkerTypeHandler {
-    override val unlinkedMarkerType = IrSimpleTypeImpl(
+internal class PartiallyLinkedIrMarkerTypeHandlerImpl(builtIns: IrBuiltIns) : PartiallyLinkedIrMarkerTypeHandler {
+    override val markerType = IrSimpleTypeImpl(
         classifier = builtIns.anyClass,
         hasQuestionMark = true,
         arguments = emptyList(),
         annotations = emptyList()
     )
 
-    override fun IrType.isUnlinkedMarkerType(): Boolean = this === unlinkedMarkerType
+    override fun isMarkerType(type: IrType): Boolean = type === markerType
 }

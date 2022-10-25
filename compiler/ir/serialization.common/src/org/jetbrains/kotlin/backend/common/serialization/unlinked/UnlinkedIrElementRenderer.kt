@@ -61,7 +61,7 @@ internal object UnlinkedIrElementRenderer {
 
                 append(" can not be ").append(expressionKind.verb3rdForm).append(" because it")
             }
-            else -> error("Unexpected type of IR element: ${this::class.java}, $this")
+            else -> error("[Partial Linkage] Unexpected type of IR element: ${this::class.java}, $this")
         }
 
         append(" uses unlinked symbols")

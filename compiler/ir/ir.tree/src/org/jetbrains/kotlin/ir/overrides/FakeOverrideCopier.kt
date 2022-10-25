@@ -64,6 +64,7 @@ class FakeOverrideCopier(
                 valueParameters = declaration.valueParameters.transform()
 
                 if (customization.needToCreateBody && body == null) {
+                    // The body will be patched later, in PartiallyLinkedIrTreePatcher.
                     body = factory.createBlockBody(startOffset, endOffset)
                 }
             }
