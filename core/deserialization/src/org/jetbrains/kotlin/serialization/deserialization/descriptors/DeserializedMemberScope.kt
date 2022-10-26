@@ -373,9 +373,6 @@ abstract class DeserializedMemberScope protected constructor(
                     subResult.addAll(descriptorsByName(name))
                 }
             }
-
-            // We perform the sort just in case
-            subResult.sortWith(MemberComparator.NameAndTypeMemberComparator.INSTANCE)
             result.addAll(subResult)
         }
     }

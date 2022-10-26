@@ -253,6 +253,9 @@ message Class {
 
   optional VersionRequirementTable version_requirement_table = 32;
 
+  // index is unsortedIndex, value is sorted index
+  repeated int32 properties_program_order = 33;
+
   extensions 100 to 18999;
 }
 

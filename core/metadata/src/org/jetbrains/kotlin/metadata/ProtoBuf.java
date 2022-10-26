@@ -8594,6 +8594,31 @@ public final class ProtoBuf {
      * <code>optional .org.jetbrains.kotlin.metadata.VersionRequirementTable version_requirement_table = 32;</code>
      */
     org.jetbrains.kotlin.metadata.ProtoBuf.VersionRequirementTable getVersionRequirementTable();
+
+    /**
+     * <code>repeated int32 properties_program_order = 33;</code>
+     *
+     * <pre>
+     * index is unsortedIndex, value is sorted index
+     * </pre>
+     */
+    java.util.List<java.lang.Integer> getPropertiesProgramOrderList();
+    /**
+     * <code>repeated int32 properties_program_order = 33;</code>
+     *
+     * <pre>
+     * index is unsortedIndex, value is sorted index
+     * </pre>
+     */
+    int getPropertiesProgramOrderCount();
+    /**
+     * <code>repeated int32 properties_program_order = 33;</code>
+     *
+     * <pre>
+     * index is unsortedIndex, value is sorted index
+     * </pre>
+     */
+    int getPropertiesProgramOrder(int index);
   }
   /**
    * Protobuf type {@code org.jetbrains.kotlin.metadata.Class}
@@ -8929,6 +8954,27 @@ public final class ProtoBuf {
               bitField0_ |= 0x00000080;
               break;
             }
+            case 264: {
+              if (!((mutable_bitField0_ & 0x01000000) == 0x01000000)) {
+                propertiesProgramOrder_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x01000000;
+              }
+              propertiesProgramOrder_.add(input.readInt32());
+              break;
+            }
+            case 266: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x01000000) == 0x01000000) && input.getBytesUntilLimit() > 0) {
+                propertiesProgramOrder_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x01000000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                propertiesProgramOrder_.add(input.readInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
           }
         }
       } catch (org.jetbrains.kotlin.protobuf.InvalidProtocolBufferException e) {
@@ -8984,6 +9030,9 @@ public final class ProtoBuf {
         }
         if (((mutable_bitField0_ & 0x00400000) == 0x00400000)) {
           versionRequirement_ = java.util.Collections.unmodifiableList(versionRequirement_);
+        }
+        if (((mutable_bitField0_ & 0x01000000) == 0x01000000)) {
+          propertiesProgramOrder_ = java.util.Collections.unmodifiableList(propertiesProgramOrder_);
         }
         try {
           unknownFieldsCodedOutput.flush();
@@ -9753,6 +9802,40 @@ public final class ProtoBuf {
       return versionRequirementTable_;
     }
 
+    public static final int PROPERTIES_PROGRAM_ORDER_FIELD_NUMBER = 33;
+    private java.util.List<java.lang.Integer> propertiesProgramOrder_;
+    /**
+     * <code>repeated int32 properties_program_order = 33;</code>
+     *
+     * <pre>
+     * index is unsortedIndex, value is sorted index
+     * </pre>
+     */
+    public java.util.List<java.lang.Integer>
+        getPropertiesProgramOrderList() {
+      return propertiesProgramOrder_;
+    }
+    /**
+     * <code>repeated int32 properties_program_order = 33;</code>
+     *
+     * <pre>
+     * index is unsortedIndex, value is sorted index
+     * </pre>
+     */
+    public int getPropertiesProgramOrderCount() {
+      return propertiesProgramOrder_.size();
+    }
+    /**
+     * <code>repeated int32 properties_program_order = 33;</code>
+     *
+     * <pre>
+     * index is unsortedIndex, value is sorted index
+     * </pre>
+     */
+    public int getPropertiesProgramOrder(int index) {
+      return propertiesProgramOrder_.get(index);
+    }
+
     private void initFields() {
       flags_ = 6;
       fqName_ = 0;
@@ -9778,6 +9861,7 @@ public final class ProtoBuf {
       typeTable_ = org.jetbrains.kotlin.metadata.ProtoBuf.TypeTable.getDefaultInstance();
       versionRequirement_ = java.util.Collections.emptyList();
       versionRequirementTable_ = org.jetbrains.kotlin.metadata.ProtoBuf.VersionRequirementTable.getDefaultInstance();
+      propertiesProgramOrder_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -9965,6 +10049,9 @@ public final class ProtoBuf {
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeMessage(32, versionRequirementTable_);
       }
+      for (int i = 0; i < propertiesProgramOrder_.size(); i++) {
+        output.writeInt32(33, propertiesProgramOrder_.get(i));
+      }
       extensionWriter.writeUntil(19000, output);
       output.writeRawBytes(unknownFields);
     }
@@ -10136,6 +10223,15 @@ public final class ProtoBuf {
         size += org.jetbrains.kotlin.protobuf.CodedOutputStream
           .computeMessageSize(32, versionRequirementTable_);
       }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < propertiesProgramOrder_.size(); i++) {
+          dataSize += org.jetbrains.kotlin.protobuf.CodedOutputStream
+            .computeInt32SizeNoTag(propertiesProgramOrder_.get(i));
+        }
+        size += dataSize;
+        size += 2 * getPropertiesProgramOrderList().size();
+      }
       size += extensionsSerializedSize();
       size += unknownFields.size();
       memoizedSerializedSize = size;
@@ -10278,6 +10374,8 @@ public final class ProtoBuf {
         bitField0_ = (bitField0_ & ~0x00400000);
         versionRequirementTable_ = org.jetbrains.kotlin.metadata.ProtoBuf.VersionRequirementTable.getDefaultInstance();
         bitField0_ = (bitField0_ & ~0x00800000);
+        propertiesProgramOrder_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x01000000);
         return this;
       }
 
@@ -10413,6 +10511,11 @@ public final class ProtoBuf {
           to_bitField0_ |= 0x00000080;
         }
         result.versionRequirementTable_ = versionRequirementTable_;
+        if (((bitField0_ & 0x01000000) == 0x01000000)) {
+          propertiesProgramOrder_ = java.util.Collections.unmodifiableList(propertiesProgramOrder_);
+          bitField0_ = (bitField0_ & ~0x01000000);
+        }
+        result.propertiesProgramOrder_ = propertiesProgramOrder_;
         result.bitField0_ = to_bitField0_;
         return result;
       }
@@ -10602,6 +10705,16 @@ public final class ProtoBuf {
         }
         if (other.hasVersionRequirementTable()) {
           mergeVersionRequirementTable(other.getVersionRequirementTable());
+        }
+        if (!other.propertiesProgramOrder_.isEmpty()) {
+          if (propertiesProgramOrder_.isEmpty()) {
+            propertiesProgramOrder_ = other.propertiesProgramOrder_;
+            bitField0_ = (bitField0_ & ~0x01000000);
+          } else {
+            ensurePropertiesProgramOrderIsMutable();
+            propertiesProgramOrder_.addAll(other.propertiesProgramOrder_);
+          }
+          
         }
         this.mergeExtensionFields(other);
         setUnknownFields(
@@ -12710,6 +12823,100 @@ public final class ProtoBuf {
         versionRequirementTable_ = org.jetbrains.kotlin.metadata.ProtoBuf.VersionRequirementTable.getDefaultInstance();
 
         bitField0_ = (bitField0_ & ~0x00800000);
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> propertiesProgramOrder_ = java.util.Collections.emptyList();
+      private void ensurePropertiesProgramOrderIsMutable() {
+        if (!((bitField0_ & 0x01000000) == 0x01000000)) {
+          propertiesProgramOrder_ = new java.util.ArrayList<java.lang.Integer>(propertiesProgramOrder_);
+          bitField0_ |= 0x01000000;
+         }
+      }
+      /**
+       * <code>repeated int32 properties_program_order = 33;</code>
+       *
+       * <pre>
+       * index is unsortedIndex, value is sorted index
+       * </pre>
+       */
+      public java.util.List<java.lang.Integer>
+          getPropertiesProgramOrderList() {
+        return java.util.Collections.unmodifiableList(propertiesProgramOrder_);
+      }
+      /**
+       * <code>repeated int32 properties_program_order = 33;</code>
+       *
+       * <pre>
+       * index is unsortedIndex, value is sorted index
+       * </pre>
+       */
+      public int getPropertiesProgramOrderCount() {
+        return propertiesProgramOrder_.size();
+      }
+      /**
+       * <code>repeated int32 properties_program_order = 33;</code>
+       *
+       * <pre>
+       * index is unsortedIndex, value is sorted index
+       * </pre>
+       */
+      public int getPropertiesProgramOrder(int index) {
+        return propertiesProgramOrder_.get(index);
+      }
+      /**
+       * <code>repeated int32 properties_program_order = 33;</code>
+       *
+       * <pre>
+       * index is unsortedIndex, value is sorted index
+       * </pre>
+       */
+      public Builder setPropertiesProgramOrder(
+          int index, int value) {
+        ensurePropertiesProgramOrderIsMutable();
+        propertiesProgramOrder_.set(index, value);
+        
+        return this;
+      }
+      /**
+       * <code>repeated int32 properties_program_order = 33;</code>
+       *
+       * <pre>
+       * index is unsortedIndex, value is sorted index
+       * </pre>
+       */
+      public Builder addPropertiesProgramOrder(int value) {
+        ensurePropertiesProgramOrderIsMutable();
+        propertiesProgramOrder_.add(value);
+        
+        return this;
+      }
+      /**
+       * <code>repeated int32 properties_program_order = 33;</code>
+       *
+       * <pre>
+       * index is unsortedIndex, value is sorted index
+       * </pre>
+       */
+      public Builder addAllPropertiesProgramOrder(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensurePropertiesProgramOrderIsMutable();
+        org.jetbrains.kotlin.protobuf.AbstractMessageLite.Builder.addAll(
+            values, propertiesProgramOrder_);
+        
+        return this;
+      }
+      /**
+       * <code>repeated int32 properties_program_order = 33;</code>
+       *
+       * <pre>
+       * index is unsortedIndex, value is sorted index
+       * </pre>
+       */
+      public Builder clearPropertiesProgramOrder() {
+        propertiesProgramOrder_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x01000000);
+        
         return this;
       }
 

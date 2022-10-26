@@ -10,8 +10,23 @@ import java.io.File
 import kotlin.test.assertFails
 
 abstract class AbstractCompareJvmAbiTest : BaseJvmAbiTest() {
+    companion object {
+        private const val IGNORE_FILE = "ignoreLegacyBackend.txt"
+    }
+
     fun doTest(path: String) {
         val testDir = File(path)
+        try {
+            doTestWithoutIgnore(testDir)
+            checkUselessIgnore(testDir)
+        } catch (e: AssertionError) {
+            ignoreIfNeeded(testDir, e)
+        } catch (e: Throwable) {
+            ignoreIfNeeded(testDir, e)
+        }
+    }
+
+    private fun doTestWithoutIgnore(testDir: File) {
         val base = Compilation(testDir, "base").also { make(it) }
         val sameAbiDir = testDir.resolve("sameAbi")
         val differentAbiDir = testDir.resolve("differentAbi")
@@ -30,5 +45,19 @@ abstract class AbstractCompareJvmAbiTest : BaseJvmAbiTest() {
             }
         }
     }
+
+    private fun ignoreIfNeeded(testDir: File, e: Throwable) {
+        if (useLegacyAbiGen && testDir.ignoreFile.exists()) return
+        throw e
+    }
+
+    private fun checkUselessIgnore(testDir: File) {
+        if (useLegacyAbiGen && testDir.ignoreFile.exists()) {
+            fail("Test is passing but ignore file is present. Please delete $IGNORE_FILE")
+        }
+    }
+
+    private val File.ignoreFile: File
+        get() = resolve(IGNORE_FILE)
 }
 

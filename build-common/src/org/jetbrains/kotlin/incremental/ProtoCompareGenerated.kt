@@ -214,6 +214,8 @@ open class ProtoCompareGenerated(
             if (!checkEquals(old.versionRequirementTable, new.versionRequirementTable)) return false
         }
 
+        if (!checkEqualsClassPropertiesProgramOrder(old, new)) return false
+
         if (old.hasExtension(JvmProtoBuf.classModuleName) != new.hasExtension(JvmProtoBuf.classModuleName)) return false
         if (old.hasExtension(JvmProtoBuf.classModuleName)) {
             if (!checkStringEquals(old.getExtension(JvmProtoBuf.classModuleName), new.getExtension(JvmProtoBuf.classModuleName))) return false
@@ -301,6 +303,7 @@ open class ProtoCompareGenerated(
         MULTI_FIELD_VALUE_CLASS_UNDERLYING_TYPE_ID_LIST,
         VERSION_REQUIREMENT_LIST,
         VERSION_REQUIREMENT_TABLE,
+        PROPERTIES_PROGRAM_ORDER_LIST,
         JVM_EXT_CLASS_MODULE_NAME,
         JVM_EXT_CLASS_LOCAL_VARIABLE_LIST,
         JVM_EXT_ANONYMOUS_OBJECT_ORIGIN_NAME,
@@ -378,6 +381,8 @@ open class ProtoCompareGenerated(
         if (old.hasVersionRequirementTable()) {
             if (!checkEquals(old.versionRequirementTable, new.versionRequirementTable)) result.add(ProtoBufClassKind.VERSION_REQUIREMENT_TABLE)
         }
+
+        if (!checkEqualsClassPropertiesProgramOrder(old, new)) result.add(ProtoBufClassKind.PROPERTIES_PROGRAM_ORDER_LIST)
 
         if (old.hasExtension(JvmProtoBuf.classModuleName) != new.hasExtension(JvmProtoBuf.classModuleName)) result.add(ProtoBufClassKind.JVM_EXT_CLASS_MODULE_NAME)
         if (old.hasExtension(JvmProtoBuf.classModuleName)) {
@@ -1520,6 +1525,16 @@ open class ProtoCompareGenerated(
         return true
     }
 
+    open fun checkEqualsClassPropertiesProgramOrder(old: ProtoBuf.Class, new: ProtoBuf.Class): Boolean {
+        if (old.propertiesProgramOrderCount != new.propertiesProgramOrderCount) return false
+
+        for(i in 0..old.propertiesProgramOrderCount - 1) {
+            if (old.getPropertiesProgramOrder(i) != new.getPropertiesProgramOrder(i)) return false
+        }
+
+        return true
+    }
+
     open fun checkEqualsFunctionTypeParameter(old: ProtoBuf.Function, new: ProtoBuf.Function): Boolean {
         if (old.typeParameterCount != new.typeParameterCount) return false
 
@@ -1927,6 +1942,10 @@ fun ProtoBuf.Class.hashCode(stringIndexes: (Int) -> Int, fqNameIndexes: (Int) ->
 
     if (hasVersionRequirementTable()) {
         hashCode = 31 * hashCode + versionRequirementTable.hashCode(stringIndexes, fqNameIndexes, typeById)
+    }
+
+    for(i in 0..propertiesProgramOrderCount - 1) {
+        hashCode = 31 * hashCode + getPropertiesProgramOrder(i)
     }
 
     if (hasExtension(JvmProtoBuf.classModuleName)) {

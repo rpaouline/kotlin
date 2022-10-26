@@ -133,12 +133,12 @@ class FirElementSerializer private constructor(
             }
         }
 
-        val callableMembers =
-            extension.customClassMembersProducer?.getCallableMembers(klass)
-                ?: klass.declarations()
-                    .sortedWith(FirCallableDeclarationComparator)
+        val unsortedCallableMembers = extension.customClassMembersProducer?.getUnsortedCallableMembers(klass) ?: klass.declarations()
 
-        for (declaration in callableMembers) {
+        val sortedCallableMembers = extension.customClassMembersProducer?.getSortedCallableMembers(klass)
+            ?: unsortedCallableMembers.sortedWith(FirCallableDeclarationComparator)
+
+        for (declaration in sortedCallableMembers) {
             if (declaration !is FirEnumEntry && declaration.isStatic) continue // ??? Miss values() & valueOf()
             when (declaration) {
                 is FirProperty -> propertyProto(declaration)?.let { builder.addProperty(it) }
@@ -146,6 +146,10 @@ class FirElementSerializer private constructor(
                 is FirEnumEntry -> enumEntryProto(declaration).let { builder.addEnumEntry(it) }
                 else -> {}
             }
+        }
+
+        unsortedCallableMembers.filterIsInstance<FirProperty>().forEach { prop ->
+            builder.addPropertiesProgramOrder(sortedCallableMembers.indexOf(prop))
         }
 
         val nestedClassifiers = klass.declarations.filterIsInstance<FirClassLikeDeclaration>()
@@ -177,7 +181,7 @@ class FirElementSerializer private constructor(
         if (representation != null) {
             builder.inlineClassUnderlyingPropertyName = getSimpleNameIndex(representation.underlyingPropertyName)
 
-            val property = callableMembers.single {
+            val property = unsortedCallableMembers.single {
                 it is FirProperty && it.receiverTypeRef == null && it.name == representation.underlyingPropertyName
             }
             if (!property.visibility.isPublicAPI) {

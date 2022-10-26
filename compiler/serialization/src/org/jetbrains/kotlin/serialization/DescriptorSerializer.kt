@@ -130,19 +130,24 @@ class DescriptorSerializer private constructor(
             }
         }
 
-        val callableMembers =
-            extension.customClassMembersProducer?.getCallableMembers(classDescriptor)
-                ?: sort(
-                    DescriptorUtils.getAllDescriptors(classDescriptor.defaultType.memberScope)
-                        .filterIsInstance<CallableMemberDescriptor>()
-                        .filter { it.kind != CallableMemberDescriptor.Kind.FAKE_OVERRIDE }
-                )
+        val unsortedCallableMembers = extension.customClassMembersProducer?.getUnsortedCallableMembers(classDescriptor)
+            ?: DescriptorUtils.getAllDescriptors(classDescriptor.defaultType.memberScope)
+                .filterIsInstance<CallableMemberDescriptor>()
+                .filter { it.kind != CallableMemberDescriptor.Kind.FAKE_OVERRIDE }
 
-        for (descriptor in callableMembers) {
+
+        val sortedCallableMembers =
+            extension.customClassMembersProducer?.getSortedCallableMembers(classDescriptor) ?: sort(unsortedCallableMembers)
+
+        for (descriptor in sortedCallableMembers) {
             when (descriptor) {
                 is PropertyDescriptor -> propertyProto(descriptor)?.let { builder.addProperty(it) }
                 is FunctionDescriptor -> functionProto(descriptor)?.let { builder.addFunction(it) }
             }
+        }
+
+        unsortedCallableMembers.filterIsInstance<PropertyDescriptor>().forEach { prop ->
+            builder.addPropertiesProgramOrder(sortedCallableMembers.indexOf(prop))
         }
 
         val nestedClassifiers = sort(DescriptorUtils.getAllDescriptors(classDescriptor.unsubstitutedInnerClassesScope))
@@ -175,7 +180,7 @@ class DescriptorSerializer private constructor(
         classDescriptor.inlineClassRepresentation?.let { inlineClassRepresentation ->
             builder.inlineClassUnderlyingPropertyName = getSimpleNameIndex(inlineClassRepresentation.underlyingPropertyName)
 
-            val property = callableMembers.single {
+            val property = sortedCallableMembers.single {
                 it is PropertyDescriptor && it.extensionReceiverParameter == null && it.name == inlineClassRepresentation.underlyingPropertyName
             }
             if (!property.visibility.isPublicAPI) {

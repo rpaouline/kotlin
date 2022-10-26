@@ -66,7 +66,7 @@ class KotlinJavascriptSerializerTest : TestCaseWithTmpdir() {
 
         RecursiveDescriptorComparatorAdaptor.validateAndCompareDescriptorWithFile(
             module.getPackage(TEST_PACKAGE_FQNAME),
-            RecursiveDescriptorComparator.DONT_INCLUDE_METHODS_OF_OBJECT,
+            RecursiveDescriptorComparator.DONT_INCLUDE_METHODS_OF_OBJECT.sortDescriptors(false),
             File(source.replace(".kt", ".txt"))
         )
     }

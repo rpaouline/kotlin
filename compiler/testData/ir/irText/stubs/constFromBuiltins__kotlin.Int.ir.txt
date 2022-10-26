@@ -77,11 +77,6 @@ CLASS IR_EXTERNAL_DECLARATION_STUB CLASS name:Int modality:FINAL visibility:publ
       public open fun equals (other: <unbound IrClassPublicSymbolImpl>?): <unbound IrClassPublicSymbolImpl> [fake_override,operator] declared in kotlin.Comparable
     $this: VALUE_PARAMETER IR_EXTERNAL_DECLARATION_STUB name:<this> type:kotlin.Int
     VALUE_PARAMETER IR_EXTERNAL_DECLARATION_STUB name:other index:0 type:<unbound IrClassPublicSymbolImpl>?
-  FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:<unbound IrClassPublicSymbolImpl>) returnType:kotlin.Int [fake_override]
-    overridden:
-      public open fun hashCode (): kotlin.Int [fake_override] declared in kotlin.Number
-      public open fun hashCode (): kotlin.Int [fake_override] declared in kotlin.Comparable
-    $this: VALUE_PARAMETER FAKE_OVERRIDE name:<this> type:<unbound IrClassPublicSymbolImpl>
   FUN IR_EXTERNAL_DECLARATION_STUB name:inc visibility:public modality:FINAL <> ($this:kotlin.Int) returnType:kotlin.Int [operator]
     $this: VALUE_PARAMETER IR_EXTERNAL_DECLARATION_STUB name:<this> type:kotlin.Int
   FUN IR_EXTERNAL_DECLARATION_STUB name:inv visibility:public modality:FINAL <> ($this:kotlin.Int) returnType:kotlin.Int
@@ -332,6 +327,11 @@ CLASS IR_EXTERNAL_DECLARATION_STUB CLASS name:Int modality:FINAL visibility:publ
       <unbound>
     $this: VALUE_PARAMETER IR_EXTERNAL_DECLARATION_STUB name:<this> type:kotlin.Int
     VALUE_PARAMETER IR_EXTERNAL_DECLARATION_STUB name:other index:0 type:kotlin.Int
+  FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:<unbound IrClassPublicSymbolImpl>) returnType:kotlin.Int [fake_override]
+    overridden:
+      public open fun hashCode (): kotlin.Int [fake_override] declared in kotlin.Number
+      public open fun hashCode (): kotlin.Int [fake_override] declared in kotlin.Comparable
+    $this: VALUE_PARAMETER FAKE_OVERRIDE name:<this> type:<unbound IrClassPublicSymbolImpl>
   CLASS IR_EXTERNAL_DECLARATION_STUB OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[<unbound IrClassPublicSymbolImpl>]
     $this: VALUE_PARAMETER IR_EXTERNAL_DECLARATION_STUB name:<this> type:kotlin.Int.Companion
     CONSTRUCTOR IR_EXTERNAL_DECLARATION_STUB visibility:private <> () returnType:kotlin.Int.Companion [primary]

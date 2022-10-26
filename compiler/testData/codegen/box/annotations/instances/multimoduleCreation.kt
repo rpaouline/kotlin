@@ -59,7 +59,7 @@ fun box(): String {
         C().three().toString()
     )
     assertEquals(
-        """@a.OtherArrays(annotationsArray=[], doublesArray=[], enumArray=[], namesArray=[@kotlin.jvm.JvmName(name=foo)])""",
+        """@a.OtherArrays(doublesArray=[], enumArray=[], annotationsArray=[], namesArray=[@kotlin.jvm.JvmName(name=foo)])""",
         C().four().toString()
     )
     assertEquals(Int.MAX_VALUE.toUInt() + 10.toUInt(), C().five().uint)

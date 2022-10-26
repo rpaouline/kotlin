@@ -303,6 +303,8 @@ class DifferenceCalculatorForClass(
                     isClassAffected = true
                     areSubclassesAffected = true
                 }
+
+                ProtoBufClassKind.PROPERTIES_PROGRAM_ORDER_LIST -> {}
             }
         }
 

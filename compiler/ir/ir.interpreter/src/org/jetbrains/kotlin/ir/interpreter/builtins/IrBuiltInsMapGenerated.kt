@@ -25,18 +25,6 @@ import org.jetbrains.kotlin.ir.interpreter.proxy.Proxy
 
 internal fun interpretUnaryFunction(name: String, type: String, a: Any?): Any? {
     when (name) {
-        "hashCode" -> when (type) {
-            "Boolean" -> return (a as Boolean).hashCode()
-            "Char" -> return (a as Char).hashCode()
-            "Byte" -> return (a as Byte).hashCode()
-            "Short" -> return (a as Short).hashCode()
-            "Int" -> return (a as Int).hashCode()
-            "Float" -> return (a as Float).hashCode()
-            "Long" -> return (a as Long).hashCode()
-            "Double" -> return (a as Double).hashCode()
-            "String" -> return (a as String).hashCode()
-            "Any" -> return (a as Any).hashCode()
-        }
         "not" -> when (type) {
             "Boolean" -> return (a as Boolean).not()
         }
@@ -53,6 +41,18 @@ internal fun interpretUnaryFunction(name: String, type: String, a: Any?): Any? {
             "Any" -> return (a as Any).toString()
             "Any?" -> return a?.toString() ?: "null"
             "Unit" -> return Unit.toString()
+        }
+        "hashCode" -> when (type) {
+            "Boolean" -> return (a as Boolean).hashCode()
+            "Char" -> return (a as Char).hashCode()
+            "Byte" -> return (a as Byte).hashCode()
+            "Short" -> return (a as Short).hashCode()
+            "Int" -> return (a as Int).hashCode()
+            "Float" -> return (a as Float).hashCode()
+            "Long" -> return (a as Long).hashCode()
+            "Double" -> return (a as Double).hashCode()
+            "String" -> return (a as String).hashCode()
+            "Any" -> return (a as Any).hashCode()
         }
         "dec" -> when (type) {
             "Char" -> return (a as Char).dec()

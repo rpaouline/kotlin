@@ -91,7 +91,8 @@ abstract class FirSerializerExtension {
         get() = null
 
     interface ClassMembersProducer {
-        fun getCallableMembers(klass: FirClass): Collection<FirCallableDeclaration>
+        fun getSortedCallableMembers(klass: FirClass): Collection<FirCallableDeclaration>
+        fun getUnsortedCallableMembers(klass: FirClass): Collection<FirCallableDeclaration>
     }
 
 }

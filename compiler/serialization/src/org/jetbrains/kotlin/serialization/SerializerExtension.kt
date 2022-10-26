@@ -30,7 +30,8 @@ abstract class SerializerExtension {
     open fun shouldSerializeNestedClass(descriptor: ClassDescriptor): Boolean = true
 
     interface ClassMembersProducer {
-        fun getCallableMembers(classDescriptor: ClassDescriptor): Collection<CallableMemberDescriptor>
+        fun getSortedCallableMembers(classDescriptor: ClassDescriptor): Collection<CallableMemberDescriptor>
+        fun getUnsortedCallableMembers(classDescriptor: ClassDescriptor): Collection<CallableMemberDescriptor>
     }
 
     open val customClassMembersProducer: ClassMembersProducer?

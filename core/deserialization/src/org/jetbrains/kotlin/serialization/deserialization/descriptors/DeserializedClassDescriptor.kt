@@ -302,7 +302,7 @@ class DeserializedClassDescriptor(
     }
 
     private inner class DeserializedClassMemberScope(private val kotlinTypeRefiner: KotlinTypeRefiner) : DeserializedMemberScope(
-        c, classProto.functionList, classProto.propertyList, classProto.typeAliasList,
+        c, classProto.functionList, classProto.propertyListInDeclarationOrder, classProto.typeAliasList,
         classProto.nestedClassNameList.map(c.nameResolver::getName).let { { it } } // workaround KT-13454
     ) {
         private val classDescriptor: DeserializedClassDescriptor get() = this@DeserializedClassDescriptor
@@ -451,7 +451,7 @@ class DeserializedClassDescriptor(
             }
 
             return classProto.functionList.mapTo(result) { c.nameResolver.getName(it.name) } +
-                    classProto.propertyList.mapTo(result) { c.nameResolver.getName(it.name) }
+                    classProto.propertyListInDeclarationOrder.mapTo(result) { c.nameResolver.getName(it.name) }
         }
 
         fun all(): Collection<ClassDescriptor> =

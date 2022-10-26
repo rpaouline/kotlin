@@ -139,7 +139,7 @@ fun deserializeClassToSymbol(
         )
 
         addDeclarations(
-            classProto.propertyList.map {
+            classProto.propertyListInDeclarationOrder.map {
                 classDeserializer.loadProperty(it, classProto, symbol)
             }
         )
