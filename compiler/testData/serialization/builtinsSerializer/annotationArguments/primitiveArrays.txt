@@ -9,7 +9,6 @@ package test
 }
 
 public final annotation class PrimitiveArrays : kotlin.Annotation {
-    public constructor PrimitiveArrays(/*0*/ byteArray: kotlin.ByteArray, /*1*/ charArray: kotlin.CharArray, /*2*/ shortArray: kotlin.ShortArray, /*3*/ intArray: kotlin.IntArray, /*4*/ longArray: kotlin.LongArray, /*5*/ floatArray: kotlin.FloatArray, /*6*/ doubleArray: kotlin.DoubleArray, /*7*/ booleanArray: kotlin.BooleanArray)
     public final val booleanArray: kotlin.BooleanArray
     public final val byteArray: kotlin.ByteArray
     public final val charArray: kotlin.CharArray
@@ -18,4 +17,5 @@ public final annotation class PrimitiveArrays : kotlin.Annotation {
     public final val intArray: kotlin.IntArray
     public final val longArray: kotlin.LongArray
     public final val shortArray: kotlin.ShortArray
+    public constructor PrimitiveArrays(/*0*/ byteArray: kotlin.ByteArray, /*1*/ charArray: kotlin.CharArray, /*2*/ shortArray: kotlin.ShortArray, /*3*/ intArray: kotlin.IntArray, /*4*/ longArray: kotlin.LongArray, /*5*/ floatArray: kotlin.FloatArray, /*6*/ doubleArray: kotlin.DoubleArray, /*7*/ booleanArray: kotlin.BooleanArray)
 }

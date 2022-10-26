@@ -6,7 +6,6 @@ package test
 @test.anno(x = "extension function") public fun kotlin.Long.f2(/*0*/ @test.anno(x = "extension function parameter") p: kotlin.Int): kotlin.Unit
 
 @test.anno(x = "top level class") public final class C1 {
-    @test.anno(x = "constructor") public constructor C1()
     @test.anno(x = "member property") public final val p3: kotlin.Nothing?
     @test.anno(x = "member extension property") public final val kotlin.Int.v4: kotlin.Int
     @test.anno(x = "member function") public final fun f3(/*0*/ @test.anno(x = "member function parameter") p: kotlin.Int): kotlin.Unit
@@ -19,9 +18,10 @@ package test
     @test.anno(x = "companion object") public companion object Companion {
         private constructor Companion()
     }
+    @test.anno(x = "constructor") public constructor C1()
 }
 
 public final annotation class anno : kotlin.Annotation {
-    public constructor anno(/*0*/ x: kotlin.String)
     public final val x: kotlin.String
+    public constructor anno(/*0*/ x: kotlin.String)
 }

@@ -9,13 +9,13 @@ package test
 }
 
 public final annotation class EnumArray : kotlin.Annotation {
-    public constructor EnumArray(/*0*/ enumArray: kotlin.Array<test.Weapon>)
     public final val enumArray: kotlin.Array<test.Weapon>
+    public constructor EnumArray(/*0*/ enumArray: kotlin.Array<test.Weapon>)
 }
 
 public final annotation class JustEnum : kotlin.Annotation {
-    public constructor JustEnum(/*0*/ weapon: test.Weapon)
     public final val weapon: test.Weapon
+    public constructor JustEnum(/*0*/ weapon: test.Weapon)
 }
 
 public final enum class Weapon : kotlin.Enum<test.Weapon> {
@@ -25,11 +25,11 @@ public final enum class Weapon : kotlin.Enum<test.Weapon> {
 
     enum entry SCISSORS
 
-    private constructor Weapon()
     @kotlin.internal.IntrinsicConstEvaluation public final override /*1*/ /*fake_override*/ val name: kotlin.String
     public final override /*1*/ /*fake_override*/ val ordinal: kotlin.Int
     protected final override /*1*/ /*fake_override*/ fun clone(): kotlin.Any
     public final override /*1*/ /*fake_override*/ fun compareTo(/*0*/ other: test.Weapon): kotlin.Int
+    private constructor Weapon()
 
     // Static members
     public final /*synthesized*/ fun valueOf(/*0*/ value: kotlin.String): test.Weapon
