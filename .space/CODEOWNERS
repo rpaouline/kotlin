@@ -4,6 +4,7 @@
 # Directive UNKNOWN specifies that path is unclaimed
 # Ownership must be exhaustive modulo UNKNOWN
 
+# OWNER_LIST: Kotlin
 # OWNER_LIST: "Kotlin Libraries"
 # OWNER_LIST: "Kotlin JVM" "Kotlin JS" "Kotlin Native" "Kotlin Wasm"
 # OWNER_LIST: "Kotlin Compiler Core"
