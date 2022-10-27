@@ -65,15 +65,11 @@ object FirJsSessionFactory : FirAbstractSessionFactory() {
         registerExtraComponents = { it.registerJsSpecificResolveComponents() },
         createKotlinScopeProvider = { FirKotlinScopeProvider { _, declaredMemberScope, _, _ -> declaredMemberScope } },
         createProviders = { session, builtinsModuleData, kotlinScopeProvider ->
-            val klibProviders = resolvedLibraries.map {
-                KlibBasedSymbolProvider(session, moduleDataProvider, kotlinScopeProvider, it)
-            }
-
-            klibProviders +
-                listOf(
-                    FirCloneableSymbolProvider(session, builtinsModuleData, kotlinScopeProvider),
-                    FirBuiltinSymbolProvider(session, builtinsModuleData, kotlinScopeProvider),
-                )
+            listOf(
+                KlibBasedSymbolProvider(session, moduleDataProvider, kotlinScopeProvider, resolvedLibraries),
+                FirCloneableSymbolProvider(session, builtinsModuleData, kotlinScopeProvider),
+                FirBuiltinSymbolProvider(session, builtinsModuleData, kotlinScopeProvider),
+            )
         }
     )
 
