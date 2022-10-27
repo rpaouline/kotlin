@@ -21,7 +21,7 @@ import org.jetbrains.kotlin.resolve.PlatformDependentAnalyzerServices
 import org.jetbrains.kotlin.resolve.jvm.platform.JvmPlatformAnalyzerServices
 
 object FirSessionFactoryHelper {
-    inline fun createSessionWithDependencies(
+    inline fun createCommonOrJvmSessionWithDependencies(
         moduleName: Name,
         platform: TargetPlatform,
         analyzerServices: PlatformDependentAnalyzerServices,
@@ -37,7 +37,8 @@ object FirSessionFactoryHelper {
         needRegisterJavaElementFinder: Boolean,
         dependenciesConfigurator: DependencyListForCliModule.Builder.() -> Unit = {},
         noinline sessionConfigurator: FirSessionConfigurator.() -> Unit = {},
-        isCommonSession: Boolean = false
+        isCommonSession: Boolean = false,
+        useDependentLibraryProviders: Boolean = false
     ): FirSession {
         val dependencyList = DependencyListForCliModule.build(moduleName, platform, analyzerServices, dependenciesConfigurator)
         val sessionProvider = externalSessionProvider ?: FirProjectSessionProvider()
@@ -50,7 +51,8 @@ object FirSessionFactoryHelper {
                 projectEnvironment,
                 librariesScope,
                 packagePartProvider,
-                languageVersionSettings
+                languageVersionSettings,
+                useDependentLibraryProviders = useDependentLibraryProviders
             )
         } else {
             FirJvmSessionFactory.createLibrarySession(
@@ -60,7 +62,8 @@ object FirSessionFactoryHelper {
                 projectEnvironment,
                 librariesScope,
                 packagePartProvider,
-                languageVersionSettings
+                languageVersionSettings,
+                useDependentLibraryProviders = useDependentLibraryProviders
             )
         }
 

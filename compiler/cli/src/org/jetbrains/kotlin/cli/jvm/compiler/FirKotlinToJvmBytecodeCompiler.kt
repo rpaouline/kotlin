@@ -41,8 +41,6 @@ import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 import org.jetbrains.kotlin.fir.java.FirProjectSessionProvider
 import org.jetbrains.kotlin.fir.pipeline.*
-import org.jetbrains.kotlin.fir.resolve.providers.firProvider
-import org.jetbrains.kotlin.fir.resolve.providers.impl.FirProviderImpl
 import org.jetbrains.kotlin.fir.session.FirSessionFactoryHelper
 import org.jetbrains.kotlin.fir.session.IncrementalCompilationContext
 import org.jetbrains.kotlin.fir.session.environment.AbstractProjectEnvironment
@@ -250,9 +248,10 @@ object FirKotlinToJvmBytecodeCompiler {
             analyzerServices: PlatformDependentAnalyzerServices,
             sourceScope: AbstractProjectFileSearchScope,
             dependenciesConfigurator: DependencyListForCliModule.Builder.() -> Unit,
-            isCommonSession: Boolean
+            isCommonSession: Boolean,
+            isMpp: Boolean
         ): FirSession {
-            return FirSessionFactoryHelper.createSessionWithDependencies(
+            return FirSessionFactoryHelper.createCommonOrJvmSessionWithDependencies(
                 Name.identifier(name),
                 platform,
                 analyzerServices,
@@ -278,6 +277,7 @@ object FirKotlinToJvmBytecodeCompiler {
                     }
                 },
                 isCommonSession = isCommonSession,
+                useDependentLibraryProviders = isMpp
             )
         }
 
@@ -293,7 +293,8 @@ object FirKotlinToJvmBytecodeCompiler {
                 CommonPlatformAnalyzerServices,
                 commonSourcesScope,
                 dependenciesConfigurator = {},
-                isCommonSession = true
+                isCommonSession = true,
+                isMpp = true
             )
         }
 
@@ -308,7 +309,8 @@ object FirKotlinToJvmBytecodeCompiler {
                 }
                 friendDependencies(module.getFriendPaths())
             },
-            isCommonSession = false
+            isCommonSession = false,
+            isMpp = commonSession != null
         )
 
         fun buildResolveAndCheckFir(session: FirSession, ktFiles: List<KtFile>): ModuleCompilerAnalyzedOutput {

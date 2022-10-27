@@ -97,6 +97,7 @@ class FirFrontendFacade(
                 val projectFileSearchScope = PsiBasedProjectFileSearchScope(ProjectScope.getLibrariesScope(project))
                 val packagePartProvider = projectEnvironment.getPackagePartProvider(projectFileSearchScope)
 
+                val useIrActualizer = module.directives.contains(USE_IR_ACTUALIZER)
                 if (module.targetPlatform.isCommon()) {
                     FirCommonSessionFactory.createLibrarySession(
                         moduleName,
@@ -105,7 +106,8 @@ class FirFrontendFacade(
                         projectEnvironment,
                         projectFileSearchScope,
                         packagePartProvider,
-                        languageVersionSettings
+                        languageVersionSettings,
+                        useDependentLibraryProviders = useIrActualizer
                     )
                 } else {
                     FirJvmSessionFactory.createLibrarySession(
@@ -116,6 +118,7 @@ class FirFrontendFacade(
                         projectFileSearchScope,
                         packagePartProvider,
                         languageVersionSettings,
+                        useDependentLibraryProviders = useIrActualizer
                     )
                 }
             }

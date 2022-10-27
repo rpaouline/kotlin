@@ -35,6 +35,7 @@ object FirJvmSessionFactory : FirAbstractSessionFactory() {
         scope: AbstractProjectFileSearchScope,
         packagePartProvider: PackagePartProvider,
         languageVersionSettings: LanguageVersionSettings,
+        useDependentLibraryProviders: Boolean
     ): FirSession {
         return createLibrarySession(
             mainModuleName,
@@ -44,19 +45,26 @@ object FirJvmSessionFactory : FirAbstractSessionFactory() {
             registerExtraComponents = { it.registerCommonJavaComponents(projectEnvironment.getJavaModuleResolver()) },
             createKotlinScopeProvider = { FirKotlinScopeProvider(::wrapScopeWithJvmMapped) },
             createProviders = { session, builtinsModuleData, kotlinScopeProvider ->
-                listOf(
-                    JvmClassFileBasedSymbolProvider(
-                        session,
-                        dependencyList.moduleDataProvider,
-                        kotlinScopeProvider,
-                        packagePartProvider,
-                        projectEnvironment.getKotlinClassFinder(scope),
-                        projectEnvironment.getFirJavaFacade(session, dependencyList.moduleDataProvider.allModuleData.last(), scope)
-                    ),
-                    FirBuiltinSymbolProvider(session, builtinsModuleData, kotlinScopeProvider),
-                    FirCloneableSymbolProvider(session, builtinsModuleData, kotlinScopeProvider),
-                    OptionalAnnotationClassesProvider(session, dependencyList.moduleDataProvider, kotlinScopeProvider, packagePartProvider)
-                )
+                val dependentLibraryProviders = if (useDependentLibraryProviders) getDependentLibraryProviders(dependencyList) else null
+                dependentLibraryProviders
+                    ?: listOf(
+                        JvmClassFileBasedSymbolProvider(
+                            session,
+                            dependencyList.moduleDataProvider,
+                            kotlinScopeProvider,
+                            packagePartProvider,
+                            projectEnvironment.getKotlinClassFinder(scope),
+                            projectEnvironment.getFirJavaFacade(session, dependencyList.moduleDataProvider.allModuleData.last(), scope)
+                        ),
+                        FirBuiltinSymbolProvider(session, builtinsModuleData, kotlinScopeProvider),
+                        FirCloneableSymbolProvider(session, builtinsModuleData, kotlinScopeProvider),
+                        OptionalAnnotationClassesProvider(
+                            session,
+                            dependencyList.moduleDataProvider,
+                            kotlinScopeProvider,
+                            packagePartProvider
+                        )
+                    )
             }
         )
     }
