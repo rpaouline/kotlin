@@ -11,6 +11,8 @@
 # OWNER_LIST: "Kotlin IDE"
 # OWNER_LIST: "Kotlin Release"
 # OWNER_LIST: Mikhail.Glukhikh
+# OWNER_LIST: Yan.Zhulanow
+# OWNER_LIST: Alexander.Udalov
 
 # Fallback rule, must always be top
 * "Kotlin Build Infrastructure"

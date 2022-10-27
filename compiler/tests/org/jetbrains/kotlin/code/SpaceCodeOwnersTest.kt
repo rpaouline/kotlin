@@ -9,11 +9,12 @@ import junit.framework.TestCase
 import org.eclipse.jgit.ignore.FastIgnoreRule
 import org.eclipse.jgit.ignore.IgnoreNode
 import java.io.File
+import kotlin.test.assertIs
 
 class SpaceCodeOwnersTest : TestCase() {
     private val ownersFile = File(".space/CODEOWNERS")
     private val owners = parseCodeOwners(ownersFile)
-    private val fileWalkDepthLimit = 8
+
 
     fun testOwnerListNoDuplicates() {
         val duplicatedOwnerListEntries = owners.permittedOwners.groupBy { it.name }
@@ -48,80 +49,29 @@ class SpaceCodeOwnersTest : TestCase() {
         }
     }
 
+    fun testFallbackRuleMatchEverything() {
+        val fallbackRule = owners.patterns.first()
+        assertEquals("Fallback rule must be '*', while it is $fallbackRule", "*", fallbackRule.pattern)
+        assertIs<OwnershipPattern.Pattern>(fallbackRule, "Fallback rule must not be UNKNOWN, but it is $fallbackRule")
+    }
+
     fun testPatterns() {
-        data class ItemUse(val item: OwnershipPattern, val rule: FastIgnoreRule) {
-
-            var uses: Int = 0
-            fun countMatch(path: String, isDirectory: Boolean): Boolean {
-                if (!rule.isMatch(path, isDirectory)) return false
-                uses++
-                return true
-            }
-        }
-
-        val matchers = owners.patterns.map {
-            ItemUse(it, FastIgnoreRule(it.pattern))
-        }.reversed()
-
-        val fileMatchers = matchers.filterNot { (_, rule) -> rule.dirOnly() }
-
-        val ignoreTracker = GitIgnoreTracker()
-        val root = File(".")
-
-        val unmatchedFilesTop = mutableListOf<File>()
-
-        fun isOwned(path: String, isDirectory: Boolean): Boolean {
-            return if (isDirectory) {
-                matchers.any { it.countMatch(path, true) }
-            } else {
-                fileMatchers.any { it.countMatch(path, false) }
-            }
-        }
-
-        fun visitFile(file: File, parentOwned: Boolean) {
-            val path = file.path
-            if (ignoreTracker.isIgnored(path, isDirectory = false)) return
-            if (isOwned(path, isDirectory = false)) return
-            if (parentOwned) return
-            if (unmatchedFilesTop.size < 10) {
-                unmatchedFilesTop.add(file)
-            }
-        }
-
-        fun visitDirectory(directory: File, parentOwned: Boolean, depth: Int) {
-            if (depth > fileWalkDepthLimit) return
-            val path = directory.path
-
-            if (ignoreTracker.isIgnored(path, isDirectory = true)) return
-            val directoryOwned = isOwned(path, isDirectory = true) || parentOwned
-            ignoreTracker.withDirectory(directory) {
-                for (childName in (directory.list() ?: emptyArray())) {
-                    val child = if (directory == root) {
-                        File(childName)
-                    } else {
-                        File(directory, childName)
-                    }
-                    if (child.isDirectory) {
-                        visitDirectory(child, directoryOwned, depth + 1)
-                    } else {
-                        visitFile(child, directoryOwned)
-                    }
-                }
-            }
-        }
-
-        visitDirectory(root, false, 0)
+        val checker = FileOwnershipChecker(
+            owners,
+            root = File(".")
+        )
+        checker.check()
 
         val problems = mutableListOf<String>()
 
-        if (unmatchedFilesTop.isNotEmpty()) {
+        if (checker.unmatchedFilesTop.isNotEmpty()) {
             problems.add(
                 "Found files without owner, please add it to $ownersFile:\n" +
-                        unmatchedFilesTop.joinToString("\n") { "    $it" }
+                        checker.unmatchedFilesTop.joinToString("\n") { "    $it" }
             )
         }
 
-        val unusedPatterns = matchers.filter { it.uses == 0 }
+        val unusedPatterns = checker.unusedMatchers()
         if (unusedPatterns.isNotEmpty()) {
             problems.add(
                 "Found unused patterns in $ownersFile:\n" +
@@ -131,6 +81,96 @@ class SpaceCodeOwnersTest : TestCase() {
 
         if (problems.isNotEmpty()) {
             fail(problems.joinToString("\n"))
+        }
+    }
+
+    private class FileOwnershipChecker(
+        owners: CodeOwners,
+        val root: File
+    ) {
+        private val fileWalkDepthLimit = 8
+
+        val matchers =
+            owners.patterns
+                .map { ItemUse(it, FastIgnoreRule(it.pattern)) }
+                .reversed()
+
+        val fallbackMatcher = matchers.last()
+
+        val fileMatchers = matchers.filterNot { (_, rule) -> rule.dirOnly() }
+
+        val ignoreTracker = GitIgnoreTracker()
+
+        val unmatchedFilesTop = mutableListOf<File>()
+
+        data class ItemUse(val item: OwnershipPattern, val rule: FastIgnoreRule) {
+
+            var uses: Int = 0
+
+            override fun toString(): String {
+                return "use($item) = $uses"
+            }
+        }
+
+        fun List<ItemUse>.findFirstMatching(path: String, isDirectory: Boolean, parentMatch: ItemUse?): ItemUse? {
+            val parentMatchLine = parentMatch?.item?.line
+            for (use in this) {
+                if (parentMatchLine != null && use.item.line < parentMatchLine) break
+                if (use.rule.isMatch(path, isDirectory)) {
+                    use.uses++
+                    return use
+                }
+            }
+            return parentMatch
+        }
+
+        fun findMatchLine(path: String, isDirectory: Boolean, parentMatch: ItemUse?): ItemUse? {
+            return if (isDirectory) {
+                matchers.findFirstMatching(path, isDirectory = true, parentMatch)
+            } else {
+                fileMatchers.findFirstMatching(path, isDirectory = false, parentMatch)
+            }
+        }
+
+        fun visitFile(file: File, parentMatch: ItemUse?) {
+            val path = file.path
+            if (ignoreTracker.isIgnored(path, isDirectory = false)) return
+
+            val matchedItem = findMatchLine(path, isDirectory = false, parentMatch)
+            if (matchedItem != fallbackMatcher) return
+            if (unmatchedFilesTop.size < 10) {
+                unmatchedFilesTop.add(file)
+            }
+        }
+
+        fun visitDirectory(directory: File, parentMatch: ItemUse?, depth: Int) {
+            if (depth > fileWalkDepthLimit) return
+            val path = directory.path
+
+            if (ignoreTracker.isIgnored(path, isDirectory = true)) return
+            val directoryMatch = findMatchLine(path, isDirectory = true, parentMatch)
+            ignoreTracker.withDirectory(directory) {
+                for (childName in (directory.list() ?: emptyArray())) {
+                    val child = if (directory == root) {
+                        File(childName)
+                    } else {
+                        File(directory, childName)
+                    }
+                    if (child.isDirectory) {
+                        visitDirectory(child, directoryMatch, depth + 1)
+                    } else {
+                        visitFile(child, directoryMatch)
+                    }
+                }
+            }
+        }
+
+        fun check() {
+            visitDirectory(root, null, 0)
+        }
+
+        fun unusedMatchers(): List<ItemUse> {
+            return matchers.filter { it.uses == 0 }
         }
     }
 }
