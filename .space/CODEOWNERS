@@ -35,7 +35,6 @@
 
 /buildSrc/ "Kotlin Build Infrastructure"
 
-# Compiler
 /compiler/android-tests/ "Kotlin JVM"
 /compiler/backend/ "Kotlin JVM"
 /compiler/backend.common.jvm/ "Kotlin JVM"
@@ -97,7 +96,6 @@
 /compiler/util-klib-metadata/ "Kotlin Native"
 /compiler/visualizer/ "Kotlin Compiler Core"
 
-# Core
 /core/builtins/ "Kotlin Compiler Core"
 /core/compiler.common/ "Kotlin Compiler Core"
 /core/compiler.common.jvm/ "Kotlin Compiler Core"
@@ -117,7 +115,6 @@
 
 # UNKNOWN: /docs/
 
-# Generators
 /generators/analysis-api-generator/ "Kotlin IDE"
 /generators/builtins/ "Kotlin Libraries"
 /generators/evaluate/ "Kotlin Compiler Core"
@@ -143,7 +140,6 @@
 
 /kotlin-native/ "Kotlin Native"
 
-# Libraries
 /libraries/examples/annotation-processor-example/ "Kotlin Compiler Core"
 /libraries/examples/browser-example/ "Kotlin JS"
 /libraries/examples/browser-example-with-library/ "Kotlin JS"
@@ -161,7 +157,6 @@
 /libraries/scripting/ "Kotlin Compiler Core"
 /libraries/stdlib/ "Kotlin Libraries"
 
-# Libraries. Tools
 /libraries/tools/atomicfu/ "Kotlin Libraries"
 /libraries/tools/binary-compatibility-validator/ "Kotlin Libraries"
 /libraries/tools/dukat/ "Kotlin JS"
@@ -217,7 +212,6 @@
 /libraries/tools/mutability-annotations-compat/ "Kotlin Libraries"
 /libraries/tools/script-runtime/ "Kotlin Compiler Core"
 
-# Libraries. Singular files
 /libraries/maven-settings.xml "Kotlin Build Infrastructure"
 /libraries/pom.xml "Kotlin Build Infrastructure"
 /libraries/ReadMe.md "Kotlin Libraries"
@@ -226,7 +220,6 @@
 
 /native/ "Kotlin Native"
 
-# Plugins
 /plugins/allopen/ "Kotlin Compiler Core"
 /plugins/android-extensions/ "Kotlin Compiler Core"
 /plugins/assign-plugin/ "Kotlin Compiler Core"
