@@ -213,7 +213,7 @@
 /libraries/tools/kotlin-tooling-core/ "Kotlin Build Tools"
 /libraries/tools/kotlin-tooling-metadata/ "Kotlin Build Tools"
 /libraries/tools/kotlinp/ "Kotlin JVM"
-# UNKNOWN: /libraries/tools/maven-archetypes/
+/libraries/tools/maven-archetypes/ "Kotlin Build Tools"
 /libraries/tools/mutability-annotations-compat/ "Kotlin Libraries"
 /libraries/tools/script-runtime/ "Kotlin Compiler Core"
 
@@ -247,7 +247,7 @@
 
 /repo/ "Kotlin Build Infrastructure"
 
-# UNKNOWN: /resources/
+/resources/ "Kotlin Build Infrastructure"
 
 # UNKNOWN: /spec-docs/
 
