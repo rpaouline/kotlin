@@ -12,6 +12,9 @@
 # OWNER_LIST: "Kotlin Release"
 # OWNER_LIST: Mikhail.Glukhikh
 
+# Fallback rule, must always be top
+* "Kotlin Build Infrastructure"
+
 /.idea/ "Kotlin Build Infrastructure"
 
 /.space/ "Kotlin Build Infrastructure"
@@ -24,18 +27,18 @@
 
 /ant/ "Kotlin Build Tools"
 
-# UNKNOWN: /benchmarks/
+/benchmarks/ "Kotlin Compiler Core"
 
 /build-common/ "Kotlin Build Tools"
 
 /buildSrc/ "Kotlin Build Infrastructure"
 
 # Compiler
-# UNKNOWN: /compiler/android-tests/
+/compiler/android-tests/ "Kotlin JVM"
 /compiler/backend/ "Kotlin JVM"
 /compiler/backend.common.jvm/ "Kotlin JVM"
-# UNKNOWN: /compiler/backend-common/
-# UNKNOWN: /compiler/builtins-serializer/
+/compiler/backend-common/ "Kotlin JVM" "Kotlin JS" "Kotlin Native" "Kotlin Wasm"
+/compiler/builtins-serializer/ "Kotlin Compiler Core"
 /compiler/cli/ "Kotlin Compiler Core"
 /compiler/compiler.version/ "Kotlin Compiler Core"
 /compiler/compiler-runner/ "Kotlin Compiler Core"
@@ -51,14 +54,14 @@
 /compiler/frontend.common-psi/ "Kotlin Compiler Core"
 /compiler/frontend.java/ "Kotlin Compiler Core"
 /compiler/incremental-compilation-impl/ "Kotlin Build Tools"
-# UNKNOWN: /compiler/ir/backend.common/
+/compiler/ir/backend.common/ "Kotlin JVM" "Kotlin JS" "Kotlin Native" "Kotlin Wasm"
 /compiler/ir/backend.js/ "Kotlin JS"
 /compiler/ir/backend.jvm/ "Kotlin JVM"
 /compiler/ir/backend.wasm/ "Kotlin Wasm"
-# UNKNOWN: /compiler/ir/ir.interpreter/
+/compiler/ir/ir.interpreter/ "Kotlin JVM"
 /compiler/ir/ir.ir2cfg/ Mikhail.Glukhikh
 /compiler/ir/ir.psi2ir/ "Kotlin Compiler Core"
-# UNKNOWN: /compiler/ir/ir.tree/
+/compiler/ir/ir.tree/ "Kotlin JVM" "Kotlin JS" "Kotlin Native" "Kotlin Wasm"
 # UNKNOWN: /compiler/ir/ir.tree.impl/
 /compiler/ir/serialization.common/ "Kotlin Compiler Core"
 /compiler/ir/serialization.js/ "Kotlin JS"
@@ -70,24 +73,24 @@
 /compiler/psi/ "Kotlin Compiler Core"
 /compiler/resolution/ "Kotlin Compiler Core"
 /compiler/resolution.common/ "Kotlin Compiler Core"
-# UNKNOWN: /compiler/resolution.common.jvm/
+/compiler/resolution.common.jvm/ "Kotlin Compiler Core"
 /compiler/serialization/ "Kotlin Compiler Core"
-# UNKNOWN: /compiler/test-infrastructure/
-# UNKNOWN: /compiler/test-infrastructure-utils/
-# UNKNOWN: /compiler/testData/
-# UNKNOWN: /compiler/tests/
+/compiler/test-infrastructure/ "Kotlin Compiler Core"
+/compiler/test-infrastructure-utils/ "Kotlin Compiler Core"
+/compiler/testData/ "Kotlin Compiler Core" "Kotlin JVM" "Kotlin JS" "Kotlin Native" "Kotlin Wasm"
+/compiler/tests/ "Kotlin Compiler Core" "Kotlin JVM" "Kotlin JS" "Kotlin Native" "Kotlin Wasm"
 # UNKNOWN: /compiler/tests-against-klib/
-# UNKNOWN: /compiler/tests-common/
-# UNKNOWN: /compiler/tests-common-new/
-# UNKNOWN: /compiler/tests-compiler-utils/
-# UNKNOWN: /compiler/tests-different-jdk/
-# UNKNOWN: /compiler/tests-for-compiler-generator/
-# UNKNOWN: /compiler/tests-gen/
-# UNKNOWN: /compiler/tests-java8/
-# UNKNOWN: /compiler/tests-mutes/
-# UNKNOWN: /compiler/tests-spec/
+/compiler/tests-common/ "Kotlin Compiler Core" "Kotlin JVM" "Kotlin JS" "Kotlin Native" "Kotlin Wasm"
+/compiler/tests-common-new/ "Kotlin Compiler Core"
+/compiler/tests-compiler-utils/ "Kotlin Compiler Core"
+/compiler/tests-different-jdk/ "Kotlin JVM"
+/compiler/tests-for-compiler-generator/ "Kotlin Compiler Core" "Kotlin JVM" "Kotlin JS" "Kotlin Native" "Kotlin Wasm"
+/compiler/tests-gen/ "Kotlin Compiler Core" "Kotlin JVM" "Kotlin JS" "Kotlin Native" "Kotlin Wasm"
+/compiler/tests-java8/ "Kotlin JVM"
+/compiler/tests-mutes/ "Kotlin Build Infrastructure"
+/compiler/tests-spec/ "Kotlin Compiler Core"
 /compiler/util/ "Kotlin Compiler Core"
-# UNKNOWN: /compiler/util-io/
+/compiler/util-io/ "Kotlin Native"
 /compiler/util-klib/ "Kotlin Native"
 /compiler/util-klib-metadata/ "Kotlin Native"
 /compiler/visualizer/ "Kotlin Compiler Core"
@@ -117,13 +120,13 @@
 /generators/builtins/ "Kotlin Libraries"
 /generators/evaluate/ "Kotlin Compiler Core"
 /generators/ide-iml-to-gradle-generator/ "Kotlin Build Infrastructure"
-# UNKNOWN: /generators/interpreter/
+/generators/interpreter/ "Kotlin JVM"
 /generators/main/ "Kotlin Build Infrastructure"
 /generators/nativeInteropRuntime/ "Kotlin Native"
-# UNKNOWN: /generators/protobuf/
+/generators/protobuf/ "Kotlin Build Infrastructure"
 # UNKNOWN: /generators/protobufCompare/
-# UNKNOWN: /generators/test-generator/
-# UNKNOWN: /generators/tests/
+/generators/test-generator/ "Kotlin Compiler Core" "Kotlin JVM" "Kotlin JS" "Kotlin Native" "Kotlin Wasm"
+/generators/tests/ "Kotlin Compiler Core" "Kotlin JVM" "Kotlin JS" "Kotlin Native" "Kotlin Wasm"
 /generators/wasm/ "Kotlin Wasm"
 
 /gradle/ "Kotlin Build Infrastructure"
@@ -144,14 +147,14 @@
 /libraries/examples/browser-example-with-library/ "Kotlin JS"
 /libraries/examples/js-example/ "Kotlin JS"
 /libraries/examples/kotlin-gradle-subplugin-example/ "Kotlin Compiler Core"
-# UNKNOWN: /libraries/examples/kotlin-java-example/
+/libraries/examples/kotlin-java-example/ "Kotlin JVM"
 /libraries/examples/kotlin-js-library-example/ "Kotlin JS"
 /libraries/examples/kotlin-jsr223-daemon-local-eval-example/ "Kotlin Compiler Core"
 /libraries/examples/kotlin-jsr223-local-example/ "Kotlin Compiler Core"
 /libraries/examples/scripting/ "Kotlin Compiler Core"
 /libraries/kotlin.test/ "Kotlin Compiler Core"
-# UNKNOWN: /libraries/kotlinx-metadata/
-# UNKNOWN: /libraries/lib/
+/libraries/kotlinx-metadata/ Alexander.Udalov "Kotlin Libraries"
+/libraries/lib/ "Kotlin Build Infrastructure"
 /libraries/reflect/ "Kotlin Libraries"
 /libraries/scripting/ "Kotlin Compiler Core"
 /libraries/stdlib/ "Kotlin Libraries"
@@ -227,14 +230,14 @@
 /plugins/assign-plugin/ "Kotlin Compiler Core"
 /plugins/atomicfu/ "Kotlin Libraries"
 /plugins/fir-plugin-prototype/ "Kotlin Compiler Core"
-# UNKNOWN: /plugins/imports-dumper/
-# UNKNOWN: /plugins/jvm-abi-gen/
+/plugins/imports-dumper/ "Kotlin Compiler Core"
+/plugins/jvm-abi-gen/ "Kotlin JVM"
 /plugins/kapt3/ "Kotlin Compiler Core"
 /plugins/kotlinx-serialization/ "Kotlin Libraries"
 /plugins/lombok/ "Kotlin Compiler Core"
 /plugins/noarg/ "Kotlin Compiler Core"
 /plugins/parcelize/ "Kotlin Compiler Core"
-# UNKNOWN: /plugins/pill/
+/plugins/pill/ Yan.Zhulanow "Kotlin Build Infrastructure"
 /plugins/sam-with-receiver/ "Kotlin Compiler Core"
 /plugins/scripting/ "Kotlin Compiler Core"
 
@@ -246,9 +249,9 @@
 
 # UNKNOWN: /spec-docs/
 
-# UNKNOWN: /test-instrumenter/
+/test-instrumenter/ "Kotlin Build Infrastructure"
 
-# UNKNOWN: /tests/
+/tests/ "Kotlin Build Infrastructure"
 
 /third-party/ "Kotlin JVM"
 
