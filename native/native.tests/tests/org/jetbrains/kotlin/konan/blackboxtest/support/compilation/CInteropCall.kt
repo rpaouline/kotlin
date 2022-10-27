@@ -5,13 +5,14 @@
 
 package org.jetbrains.kotlin.konan.blackboxtest.support.compilation
 
+import org.jetbrains.kotlin.konan.blackboxtest.support.settings.KotlinNativeTargets
 import org.jetbrains.kotlin.konan.file.File as KonanFile
 import org.jetbrains.kotlin.native.interop.gen.jvm.InternalInteropOptions
 import org.jetbrains.kotlin.native.interop.gen.jvm.interop
 import java.io.File
 
-internal fun invokeCInterop(inputDef: File, outputLib: File, extraArgs: Array<String>): Array<String>? {
-    val args = arrayOf("-o", outputLib.canonicalPath, "-def", inputDef.canonicalPath, "-no-default-libs")
+internal fun invokeCInterop(targets: KotlinNativeTargets, inputDef: File, outputLib: File, extraArgs: Array<String>): Array<String>? {
+    val args = arrayOf("-o", outputLib.canonicalPath, "-def", inputDef.canonicalPath, "-no-default-libs", "-target", targets.testTarget.name)
     val buildDir = KonanFile("${outputLib.canonicalPath}-build")
     val generatedDir = KonanFile(buildDir, "kotlin")
     val nativesDir = KonanFile(buildDir, "natives")

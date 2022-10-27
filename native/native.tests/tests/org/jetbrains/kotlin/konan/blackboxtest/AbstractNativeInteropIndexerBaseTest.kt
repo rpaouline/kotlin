@@ -15,6 +15,7 @@ import java.io.File
 
 abstract class AbstractNativeInteropIndexerBaseTest : AbstractNativeSimpleTest() {
     private val buildDir: File get() = testRunSettings.get<SimpleTestDirectories>().testBuildDir
+    internal val targets: KotlinNativeTargets get() = testRunSettings.get<KotlinNativeTargets>()
 
     internal fun TestCase.cinteropToLibrary(vararg dependencies: TestCompilationDependency<*>): TestCompilationResult.Success<out KLIB> {
         val compilation = CInteropCompilation(

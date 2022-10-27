@@ -23,7 +23,8 @@ abstract class AbstractNativeInteropIndexerKT39120Test : AbstractNativeInteropIn
 
     @Synchronized
     protected fun runTest(@TestDataFile testPath: String) {
-        Assumptions.assumeTrue(HostManager.host.family.isAppleFamily) // KT-39120 is about Objective-C, so under Apple hosts only
+        // KT-39120 is about Objective-C, so this test is for Apple hosts/targets only
+        Assumptions.assumeTrue(targets.hostTarget.family.isAppleFamily && targets.testTarget.family.isAppleFamily)
 
         val testPathFull = getAbsoluteFile(testPath)
         val testDataDir = testPathFull.parentFile.parentFile

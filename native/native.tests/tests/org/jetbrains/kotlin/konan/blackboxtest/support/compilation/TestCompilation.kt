@@ -218,6 +218,7 @@ internal class CInteropCompilation(
         @OptIn(ExperimentalTime::class)
         val duration = measureTime {
             maybeCompilerArgs = invokeCInterop(
+                targets,
                 sourceModules.first().files.first().location,
                 expectedArtifact.klibFile,
                 extraArgsArray

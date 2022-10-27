@@ -13,9 +13,12 @@ import org.jetbrains.kotlin.konan.blackboxtest.support.compilation.TestCompilati
 import org.jetbrains.kotlin.konan.blackboxtest.support.runner.*
 import org.jetbrains.kotlin.konan.blackboxtest.support.settings.*
 import org.jetbrains.kotlin.konan.blackboxtest.support.util.*
+import org.jetbrains.kotlin.konan.target.Family
+import org.jetbrains.kotlin.konan.target.KonanTarget
 import org.jetbrains.kotlin.test.services.JUnit5Assertions.assertEquals
 import org.junit.jupiter.api.Assumptions
 import org.junit.jupiter.api.Tag
+import java.io.File
 
 abstract class AbstractNativeInteropIndexerFModulesTest : AbstractNativeInteropIndexerTest() {
     override val fmodules = true
@@ -31,17 +34,23 @@ abstract class AbstractNativeInteropIndexerTest : AbstractNativeInteropIndexerBa
 
     @Synchronized
     protected fun runTest(@TestDataFile testPath: String) {
-        // FIXME: remove the assumption below and fix cinterop to pass those tests. Now `clang -fmodules` cannot compile cstubs.c using included Darwin module from sysroot
         Assumptions.assumeFalse(
             this is AbstractNativeInteropIndexerFModulesTest &&
-                    (testPath.endsWith("/builtinsDefs/fullStdargH/") || testPath.endsWith("/builtinsDefs/fullA/"))
+                    (targets.testTarget.family == Family.ANDROID || // fatal error: could not build module 'std'
+                            // FIXME: remove the following assumption and fix cinterop to pass those tests.
+                            // Now `clang -fmodules` cannot compile cstubs.c using included Darwin module from sysroot
+                            (testPath.endsWith("/builtinsDefs/fullStdargH/") || testPath.endsWith("/builtinsDefs/fullA/"))
+                            )
         )
 
         val testPathFull = getAbsoluteFile(testPath)
         val testDataDir = testPathFull.parentFile.parentFile
         val includeFolder = testDataDir.resolve("include")
         val defFile = testPathFull.resolve("pod1.def")
-        val goldenFile = testPathFull.resolve("contents.gold.txt")
+        val goldenFile = if (testDataDir.name == "builtins")
+            getBuiltinsGoldenFile(testPathFull)
+        else
+            getGoldenFile(testPathFull)
         val fmodulesArgs = if (fmodules) listOf("-compiler-option", "-fmodules") else listOf()
         val includeFrameworkArgs = if (testDataDir.name.startsWith("framework"))
             listOf("-compiler-option", "-F${testDataDir.canonicalPath}")
@@ -56,5 +65,43 @@ abstract class AbstractNativeInteropIndexerTest : AbstractNativeInteropIndexerBa
         assertEquals(StringUtilRt.convertLineSeparators(expectedContents), StringUtilRt.convertLineSeparators(klibContents)) {
             "Test failed. CInterop compilation result was: $testCompilationResult"
         }
+    }
+
+    private fun getGoldenFile(testPathFull: File): File {
+        return testPathFull.resolve("contents.gold.txt")
+    }
+
+    private fun getBuiltinsGoldenFile(testPathFull: File): File {
+        val goldenFilePart = when (targets.testTarget) {
+            KonanTarget.ANDROID_ARM32 -> "ARM32"
+            KonanTarget.ANDROID_ARM64 -> "ARM64"
+            KonanTarget.ANDROID_X64 -> "X64"
+            KonanTarget.ANDROID_X86 -> "CPointerByteVar"
+            KonanTarget.IOS_ARM32 -> "COpaquePointer"
+            KonanTarget.IOS_ARM64 -> "CPointerByteVar"
+            KonanTarget.IOS_SIMULATOR_ARM64 -> "CPointerByteVar"
+            KonanTarget.IOS_X64 -> "X64"
+            KonanTarget.LINUX_ARM32_HFP -> "ARM32"
+            KonanTarget.LINUX_ARM64 -> "ARM64"
+            KonanTarget.LINUX_MIPS32 -> "COpaquePointer"
+            KonanTarget.LINUX_MIPSEL32 -> "COpaquePointer"
+            KonanTarget.LINUX_X64 -> "X64"
+            KonanTarget.MACOS_ARM64 -> "CPointerByteVar"
+            KonanTarget.MACOS_X64 -> "X64"
+            KonanTarget.MINGW_X64 -> "CPointerByteVar"
+            KonanTarget.MINGW_X86 -> "CPointerByteVar"
+            KonanTarget.TVOS_ARM64 -> "CPointerByteVar"
+            KonanTarget.TVOS_SIMULATOR_ARM64 -> "CPointerByteVar"
+            KonanTarget.TVOS_X64 -> "X64"
+            KonanTarget.WASM32 -> "COpaquePointer"
+            KonanTarget.WATCHOS_ARM32 -> "CPointerByteVar"
+            KonanTarget.WATCHOS_ARM64 -> "CPointerByteVar"
+            KonanTarget.WATCHOS_DEVICE_ARM64 -> "CPointerByteVar"
+            KonanTarget.WATCHOS_SIMULATOR_ARM64 -> "CPointerByteVar"
+            KonanTarget.WATCHOS_X64 -> "X64"
+            KonanTarget.WATCHOS_X86 -> "CPointerByteVar"
+            is KonanTarget.ZEPHYR -> "COpaquePointer"
+        }
+        return testPathFull.resolve("contents.gold.${goldenFilePart}.txt")
     }
 }
