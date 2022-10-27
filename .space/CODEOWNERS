@@ -15,7 +15,7 @@
 # OWNER_LIST: Alexander.Udalov
 
 # Fallback rule, must always be top
-* "Kotlin Build Infrastructure"
+* Kotlin
 
 /.idea/ "Kotlin Build Infrastructure"
 
