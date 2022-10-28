@@ -52,6 +52,7 @@ import org.jetbrains.kotlin.types.isNullable
 import org.jetbrains.kotlin.util.collectionUtils.filterIsInstanceMapNotNull
 import org.jetbrains.kotlin.utils.addToStdlib.cast
 import org.jetbrains.kotlin.utils.addToStdlib.safeAs
+import java.util.WeakHashMap
 
 enum class IcCompatibleIr2Js(val isCompatible: Boolean, val incrementalCacheEnabled: Boolean) {
     DISABLED(false, false),
@@ -79,9 +80,9 @@ class JsIrBackendContext(
     val icCompatibleIr2Js: IcCompatibleIr2Js = IcCompatibleIr2Js.DISABLED,
 ) : JsCommonBackendContext {
     val polyfills = JsPolyfills()
-    val fieldToInitializer: MutableMap<IrField, IrExpression> = mutableMapOf()
+    val fieldToInitializer = WeakHashMap<IrField, IrExpression>()
 
-    val localClassNames: MutableMap<IrClass, String> = mutableMapOf()
+    val localClassNames = WeakHashMap<IrClass, String>()
 
     val minimizedNameGenerator: MinimizedNameGenerator =
         MinimizedNameGenerator()
@@ -89,7 +90,7 @@ class JsIrBackendContext(
     val keeper: Keeper =
         Keeper(keep)
 
-    val fieldDataCache = mutableMapOf<IrClass, Map<IrField, String>>()
+    val fieldDataCache = WeakHashMap<IrClass, Map<IrField, String>>()
 
     override val builtIns = module.builtIns
 
@@ -393,7 +394,7 @@ class JsIrBackendContext(
         print(message)
     }
 
-    private val outlinedJsCodeFunctions = mutableMapOf<IrFunctionSymbol, JsFunction>()
+    private val outlinedJsCodeFunctions = WeakHashMap<IrFunctionSymbol, JsFunction>()
 
     fun addOutlinedJsCode(symbol: IrSimpleFunctionSymbol, outlinedJsCode: JsFunction) {
         outlinedJsCodeFunctions[symbol] = outlinedJsCode
