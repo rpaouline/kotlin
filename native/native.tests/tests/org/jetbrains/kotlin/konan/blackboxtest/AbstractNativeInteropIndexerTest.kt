@@ -34,13 +34,18 @@ abstract class AbstractNativeInteropIndexerTest : AbstractNativeInteropIndexerBa
 
     @Synchronized
     protected fun runTest(@TestDataFile testPath: String) {
+        // FIXME: check the following failures under Android with -fmodules
+        // fatal error: could not build module 'std'
         Assumptions.assumeFalse(
             this is AbstractNativeInteropIndexerFModulesTest &&
-                    (targets.testTarget.family == Family.ANDROID || // fatal error: could not build module 'std'
-                            // FIXME: remove the following assumption and fix cinterop to pass those tests.
-                            // Now `clang -fmodules` cannot compile cstubs.c using included Darwin module from sysroot
-                            (testPath.endsWith("/builtinsDefs/fullStdargH/") || testPath.endsWith("/builtinsDefs/fullA/"))
-                            )
+                    targets.testTarget.family == Family.ANDROID
+        )
+        // FIXME: remove the following assumption and fix cinterop to pass those tests for Apple targets.
+        // Now `clang -fmodules` cannot compile cstubs.c using included Darwin module from sysroot
+        Assumptions.assumeFalse(
+            this is AbstractNativeInteropIndexerFModulesTest &&
+                    targets.testTarget.family.isAppleFamily &&
+                    (testPath.endsWith("/builtinsDefs/fullStdargH/") || testPath.endsWith("/builtinsDefs/fullA/"))
         )
 
         val testPathFull = getAbsoluteFile(testPath)
