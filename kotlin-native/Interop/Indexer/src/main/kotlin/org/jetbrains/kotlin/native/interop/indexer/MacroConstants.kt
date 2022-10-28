@@ -20,6 +20,8 @@ import clang.*
 import kotlinx.cinterop.*
 import java.io.File
 
+val predefinedMacros = setOf("__DATE__", "__TIME__", "__TIMESTAMP__", "__FILE__", "__FILE_NAME__", "__BASE_FILE__", "__LINE__")
+
 /**
  * Finds all "macro constants" and registers them as [NativeIndex.constants] in given index.
  */
@@ -307,7 +309,7 @@ private fun collectMacroNames(nativeIndex: NativeIndexImpl, translationUnits: Li
         }
     }
 
-    return result.toList()
+    return result.filterNot { predefinedMacros.contains(it) }.toList()
 }
 
 private fun canMacroBeConstant(cursor: CValue<CXCursor>): Boolean {
