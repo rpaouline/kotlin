@@ -59,8 +59,6 @@ enum class TranslationMode(
     }
 }
 
-class JsIrFragmentAndBinaryAst(val irFile: IrFile, val fragment: JsIrProgramFragment, val binaryAst: ByteArray)
-
 class JsCodeGenerator(
     private val program: JsIrProgram,
     private val multiModule: Boolean,
@@ -165,20 +163,15 @@ class IrModuleToJsTransformerTmp(
         return makeJsCodeGeneratorFromIr(exportData, mode) to dts
     }
 
-    fun generateBinaryAst(files: Collection<IrFile>, allModules: Collection<IrModuleFragment>): List<JsIrFragmentAndBinaryAst> {
+    fun generateBinaryAst(files: Collection<IrFile>, allModules: Collection<IrModuleFragment>): List<Pair<IrFile, JsIrProgramFragment>> {
         val exportModelGenerator = ExportModelGenerator(backendContext, generateNamespacesForPackages = !isEsModules)
 
         val exportData = files.map { it to exportModelGenerator.generateExportWithExternals(it) }
 
         doStaticMembersLowering(allModules)
 
-        val serializer = JsIrAstSerializer()
         return exportData.map { (file, exports) ->
-            val fragment = generateProgramFragment(file, exports, minimizedMemberNames = false)
-            val output = ByteArrayOutputStream()
-            serializer.serialize(fragment, output)
-            val binaryAst = output.toByteArray()
-            JsIrFragmentAndBinaryAst(file, fragment, binaryAst)
+            file to generateProgramFragment(file, exports, minimizedMemberNames = false)
         }
     }
 
