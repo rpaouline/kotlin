@@ -158,7 +158,7 @@
 /compiler/testData/mockJDK/ "Kotlin Build Infrastructure"
 /compiler/testData/mockJDK9/ "Kotlin Build Infrastructure"
 /compiler/testData/mockJDKModified/ "Kotlin Build Infrastructure"
-# UNKNOWN: /compiler/testData/moduleProtoBuf/
+/compiler/testData/moduleProtoBuf/ "Kotlin JVM"
 /compiler/testData/modules.xml/ "Kotlin Compiler Core"
 /compiler/testData/multiModule/ "Kotlin Compiler Core"
 # UNKNOWN: /compiler/testData/multiplatform/
