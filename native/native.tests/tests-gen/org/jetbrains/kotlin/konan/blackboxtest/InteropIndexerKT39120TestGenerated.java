@@ -25,6 +25,12 @@ public class InteropIndexerKT39120TestGenerated extends AbstractNativeInteropInd
     }
 
     @Test
+    @TestMetadata("interModuleImport")
+    public void testInterModuleImport() throws Exception {
+        runTest("native/native.tests/testData/Interop/Indexer/KT-39120/defs/interModuleImport/");
+    }
+
+    @Test
     @TestMetadata("KT-39120")
     public void testKT_39120() throws Exception {
         runTest("native/native.tests/testData/Interop/Indexer/KT-39120/defs/KT-39120/");

@@ -128,6 +128,22 @@ public class InteropIndexerNoFModulesTestGenerated extends AbstractNativeInterop
     }
 
     @Nested
+    @TestMetadata("native/native.tests/testData/Interop/Indexer/framework.macros/macrosDefs")
+    @TestDataPath("$PROJECT_ROOT")
+    public class MacrosDefs {
+        @Test
+        public void testAllFilesPresentInMacrosDefs() throws Exception {
+            KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("native/native.tests/testData/Interop/Indexer/framework.macros/macrosDefs"), Pattern.compile("^([^_](.+))$"), null, false);
+        }
+
+        @Test
+        @TestMetadata("myMacroType")
+        public void testMyMacroType() throws Exception {
+            runTest("native/native.tests/testData/Interop/Indexer/framework.macros/macrosDefs/myMacroType/");
+        }
+    }
+
+    @Nested
     @TestMetadata("native/native.tests/testData/Interop/Indexer/builtins/builtinsDefs")
     @TestDataPath("$PROJECT_ROOT")
     public class BuiltinsDefs {
@@ -158,22 +174,6 @@ public class InteropIndexerNoFModulesTestGenerated extends AbstractNativeInterop
         @TestMetadata("fullStdargH")
         public void testFullStdargH() throws Exception {
             runTest("native/native.tests/testData/Interop/Indexer/builtins/builtinsDefs/fullStdargH/");
-        }
-    }
-
-    @Nested
-    @TestMetadata("native/native.tests/testData/Interop/Indexer/framework.macros/macrosDefs")
-    @TestDataPath("$PROJECT_ROOT")
-    public class MacrosDefs {
-        @Test
-        public void testAllFilesPresentInMacrosDefs() throws Exception {
-            KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("native/native.tests/testData/Interop/Indexer/framework.macros/macrosDefs"), Pattern.compile("^([^_](.+))$"), null, false);
-        }
-
-        @Test
-        @TestMetadata("myMacroType")
-        public void testMyMacroType() throws Exception {
-            runTest("native/native.tests/testData/Interop/Indexer/framework.macros/macrosDefs/myMacroType/");
         }
     }
 }

@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.konan.blackboxtest.support.settings.*
 import org.jetbrains.kotlin.konan.blackboxtest.support.util.*
 import org.junit.jupiter.api.Tag
 import org.jetbrains.kotlin.konan.blackboxtest.support.runner.*
-import org.jetbrains.kotlin.konan.target.HostManager
 import org.jetbrains.kotlin.test.services.JUnit5Assertions.assertEquals
 import org.junit.jupiter.api.Assumptions
 
@@ -40,7 +39,7 @@ abstract class AbstractNativeInteropIndexerKT39120Test : AbstractNativeInteropIn
         val contents1 = klib1.getContents()
 
         val expectedFiltered1Output = golden1File.readText()
-        val actualFiltered1Output = filterContentsOutput(contents1, " pod.Version")
+        val actualFiltered1Output = filterContentsOutput(contents1, " pod.Version|POD1")
         assertEquals(StringUtilRt.convertLineSeparators(expectedFiltered1Output), StringUtilRt.convertLineSeparators(actualFiltered1Output))
 
         val cinterop2ExtraArgs = listOf("-l", klib1.klibFile.canonicalPath, "-compiler-option", "-fmodules")
@@ -49,7 +48,7 @@ abstract class AbstractNativeInteropIndexerKT39120Test : AbstractNativeInteropIn
         val contents2 = klib2.getContents()
 
         val expectedFiltered2Output = golden2File.readText()
-        val actualFiltered2Output = filterContentsOutput(contents2, " pod.Version")
+        val actualFiltered2Output = filterContentsOutput(contents2, " pod.Version|POD1")
         assertEquals(StringUtilRt.convertLineSeparators(expectedFiltered2Output), StringUtilRt.convertLineSeparators(actualFiltered2Output))
     }
 
