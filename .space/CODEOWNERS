@@ -11,6 +11,7 @@
 # OWNER_LIST: "Kotlin Build Infrastructure" "Kotlin Build Tools"
 # OWNER_LIST: "Kotlin IDE"
 # OWNER_LIST: "Kotlin Release"
+# OWNER_LIST: "Kotlin Multiplatform"
 # OWNER_LIST: Mikhail.Glukhikh
 # OWNER_LIST: Yan.Zhulanow
 # OWNER_LIST: Alexander.Udalov
