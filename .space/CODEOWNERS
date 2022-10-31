@@ -249,7 +249,7 @@
 
 /tests/ "Kotlin Build Infrastructure"
 
-/third-party/ "Kotlin JVM"
+/third-party/ "Kotlin Compiler Core"
 
 /wasm/ "Kotlin Wasm"
 
