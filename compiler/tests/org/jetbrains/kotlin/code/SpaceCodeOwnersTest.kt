@@ -105,19 +105,28 @@ class SpaceCodeOwnersTest : TestCase() {
 
         data class ItemUse(val item: OwnershipPattern, val rule: FastIgnoreRule) {
 
-            var uses: Int = 0
+            var used: Boolean = false
 
             override fun toString(): String {
-                return "use($item) = $uses"
+                return "use($item) = $used"
             }
         }
 
         fun List<ItemUse>.findFirstMatching(path: String, isDirectory: Boolean, parentMatch: ItemUse?): ItemUse? {
             val parentMatchLine = parentMatch?.item?.line
+            // Here, input list should be reversed, so that
+            // lines are in reverse direction
+            // We then run matcher till find more specific rule or break when parent matches already
+            // Ex:
+            // (line = 10, pattern = /some/file),
+            // (line = 5, pattern = /some/),
+            // (line = 1, pattern = *)
+            // With input of parent = (line = 5, pattern = /some/) and path = /some/other
+            // we only search till our parent pattern line, as other rules has lower specifity
             for (use in this) {
                 if (parentMatchLine != null && use.item.line < parentMatchLine) break
                 if (use.rule.isMatch(path, isDirectory)) {
-                    use.uses++
+                    use.used = true
                     return use
                 }
             }
@@ -170,7 +179,7 @@ class SpaceCodeOwnersTest : TestCase() {
         }
 
         fun unusedMatchers(): List<ItemUse> {
-            return matchers.filter { it.uses == 0 }
+            return matchers.filterNot { it.used }
         }
     }
 }
