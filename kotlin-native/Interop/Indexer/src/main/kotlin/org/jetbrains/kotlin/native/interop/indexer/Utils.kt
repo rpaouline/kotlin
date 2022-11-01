@@ -749,7 +749,7 @@ private fun filterHeadersByName(
                     val includerPath = includerFile.path
 
                     val resolvedSibling = Paths.get(includerPath).resolveSibling(name).toString()
-                    if (clang_getFile(translationUnit, resolvedSibling)?.canonicalPath == file.canonicalPath) {
+                    if (clang_getFile(curUnit, resolvedSibling) == file) {
                         // included file is accessible from the includer by `name` used as relative path, so
                         // `name` seems to be relative to the includer:
                         Paths.get(includerName).resolveSibling(name).normalize().toString()
