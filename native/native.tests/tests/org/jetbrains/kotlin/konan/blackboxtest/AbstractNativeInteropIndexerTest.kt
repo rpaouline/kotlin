@@ -40,7 +40,7 @@ abstract class AbstractNativeInteropIndexerTest : AbstractNativeInteropIndexerBa
             this is AbstractNativeInteropIndexerFModulesTest &&
                     targets.testTarget.family == Family.ANDROID
         )
-        // FIXME: remove the following assumption and fix cinterop to pass those tests for Apple targets.
+        // FIXME: KT-54759 remove the following assumption and fix cinterop to pass those tests for Apple targets.
         // Now `clang -fmodules` cannot compile cstubs.c using included Darwin module from sysroot
         Assumptions.assumeFalse(
             this is AbstractNativeInteropIndexerFModulesTest &&
