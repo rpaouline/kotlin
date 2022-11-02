@@ -92,13 +92,13 @@ internal abstract class BasicCompilation<A : TestCompilationArtifact>(
                 LoggedData.CompilationToolCall("COMPILER", loggedCompilerParameters, exitCode, compilerOutput, compilerOutputHasErrors, duration)
 
             val result = if (exitCode != ExitCode.OK || compilerOutputHasErrors)
-                TestCompilationResult.CompilerFailure(loggedCompilationToolCall)
+                TestCompilationResult.CompilationToolFailure(loggedCompilationToolCall)
             else
                 TestCompilationResult.Success(expectedArtifact, loggedCompilationToolCall)
 
             loggedCompilationToolCall to result
         } catch (unexpectedThrowable: Throwable) {
-            val loggedFailure = LoggedData.CompilerCallUnexpectedFailure(loggedCompilerParameters, unexpectedThrowable)
+            val loggedFailure = LoggedData.CompilationToolCallUnexpectedFailure(loggedCompilerParameters, unexpectedThrowable)
             val result = TestCompilationResult.UnexpectedFailure(loggedFailure)
 
             loggedFailure to result
@@ -195,7 +195,7 @@ internal class CInteropCompilation(
     override val result: TestCompilationResult<out KLIB> by lazy {
         val extraArgsArray = freeCompilerArgs.compilerArgs.toTypedArray()
         val loggedCInteropParameters = LoggedData.CInteropParameters(extraArgs = extraArgsArray, defFile = defFile)
-        val (loggedCInteropCall: LoggedData, immediateResult: TestCompilationResult.ImmediateResult<out KLIB>) = try {
+        val (loggedCall: LoggedData, immediateResult: TestCompilationResult.ImmediateResult<out KLIB>) = try {
             val (exitCode, cinteropOutput, cinteropOutputHasErrors, duration) = invokeCInterop(
                 targets,
                 defFile,
@@ -203,27 +203,27 @@ internal class CInteropCompilation(
                 extraArgsArray
             )
 
-            val loggedCompilationToolCall = LoggedData.CompilationToolCall(
+            val loggedInteropCall = LoggedData.CompilationToolCall(
                 toolName = "CINTEROP",
                 parameters = loggedCInteropParameters,
                 exitCode = exitCode,
-                compilerOutput = cinteropOutput,
-                compilerOutputHasErrors = cinteropOutputHasErrors,
+                toolOutput = cinteropOutput,
+                toolOutputHasErrors = cinteropOutputHasErrors,
                 duration = duration
             )
             val res = if (exitCode != ExitCode.OK || cinteropOutputHasErrors)
-                TestCompilationResult.CompilerFailure(loggedCompilationToolCall)
+                TestCompilationResult.CompilationToolFailure(loggedInteropCall)
             else
-                TestCompilationResult.Success(expectedArtifact, loggedCompilationToolCall)
+                TestCompilationResult.Success(expectedArtifact, loggedInteropCall)
 
-            loggedCompilationToolCall to res
+            loggedInteropCall to res
         } catch (unexpectedThrowable: Throwable) {
-            val loggedFailure = LoggedData.CompilerCallUnexpectedFailure(loggedCInteropParameters, unexpectedThrowable)
+            val loggedFailure = LoggedData.CompilationToolCallUnexpectedFailure(loggedCInteropParameters, unexpectedThrowable)
             val res = TestCompilationResult.UnexpectedFailure(loggedFailure)
 
             loggedFailure to res
         }
-        expectedArtifact.logFile.writeText(loggedCInteropCall.toString())
+        expectedArtifact.logFile.writeText(loggedCall.toString())
 
         immediateResult
     }

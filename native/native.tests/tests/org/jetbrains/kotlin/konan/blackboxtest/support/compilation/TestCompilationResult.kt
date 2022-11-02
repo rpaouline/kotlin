@@ -18,7 +18,7 @@ internal sealed interface TestCompilationResult<A : TestCompilationArtifact> {
     data class Success<A : TestCompilationArtifact>(val resultingArtifact: A, override val loggedData: LoggedData.CompilationToolCall) :
         ImmediateResult<A>
 
-    data class CompilerFailure(override val loggedData: LoggedData.CompilationToolCall) : Failure
+    data class CompilationToolFailure(override val loggedData: LoggedData.CompilationToolCall) : Failure
     data class UnexpectedFailure(override val loggedData: LoggedData) : Failure
     data class DependencyFailures(val causes: Set<Failure>) : TestCompilationResult<Nothing>
 
@@ -31,7 +31,7 @@ internal sealed interface TestCompilationResult<A : TestCompilationArtifact> {
 
         private fun Failure.describeFailure() = loggedData.withErrorMessage(
             when (this@describeFailure) {
-                is CompilerFailure -> "Compilation failed."
+                is CompilationToolFailure -> "Compilation failed."
                 is UnexpectedFailure -> "Compilation failed with unexpected exception."
             }
         )

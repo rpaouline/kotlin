@@ -100,14 +100,14 @@ internal abstract class LoggedData {
         private val toolName: String,
         private val parameters: LoggedData,
         private val exitCode: ExitCode,
-        private val compilerOutput: String,
-        private val compilerOutputHasErrors: Boolean,
+        private val toolOutput: String,
+        private val toolOutputHasErrors: Boolean,
         private val duration: Duration
     ) : LoggedData() {
         override fun computeText(): String {
             val problems = listOfNotNull(
                 "- Non-zero exit code".takeIf { exitCode != ExitCode.OK },
-                "- Errors reported by the compiler".takeIf { compilerOutputHasErrors }
+                "- Errors reported by the $toolName".takeIf { toolOutputHasErrors }
             )
 
             return buildString {
@@ -121,14 +121,14 @@ internal abstract class LoggedData {
                 appendLine("- Exit code: ${exitCode.code} (${exitCode.name})")
                 appendDuration(duration)
                 appendLine()
-                appendPotentiallyLargeOutput(compilerOutput, "RAW $toolName OUTPUT", truncateLargeOutput = false)
+                appendPotentiallyLargeOutput(toolOutput, "RAW $toolName OUTPUT", truncateLargeOutput = false)
                 appendLine()
                 appendLine(parameters)
             }
         }
     }
 
-    class CompilerCallUnexpectedFailure(parameters: LoggedData, throwable: Throwable) : UnexpectedFailure(parameters, throwable)
+    class CompilationToolCallUnexpectedFailure(parameters: LoggedData, throwable: Throwable) : UnexpectedFailure(parameters, throwable)
 
     class TestRunParameters(
         private val compilationToolCall: CompilationToolCall,

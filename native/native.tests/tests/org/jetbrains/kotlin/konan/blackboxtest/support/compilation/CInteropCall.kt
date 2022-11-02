@@ -14,7 +14,12 @@ import java.io.File
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
-internal fun invokeCInterop(targets: KotlinNativeTargets, inputDef: File, outputLib: File, extraArgs: Array<String>): CompilerCallResult {
+internal fun invokeCInterop(
+    targets: KotlinNativeTargets,
+    inputDef: File,
+    outputLib: File,
+    extraArgs: Array<String>
+): CompilationToolCallResult {
     val args = arrayOf("-o", outputLib.canonicalPath, "-def", inputDef.canonicalPath, "-no-default-libs", "-target", targets.testTarget.name)
     val buildDir = KonanFile("${outputLib.canonicalPath}-build")
     val generatedDir = KonanFile(buildDir, "kotlin")
@@ -32,16 +37,16 @@ internal fun invokeCInterop(targets: KotlinNativeTargets, inputDef: File, output
             false
         )
     }
+    // In currently tested usecases, cinterop must return no args for the subsequent compiler call
     return if (possibleSubsequentCompilerInvocationArgs == null) {
-        // TODO There is no technical ability to extract `compilerOutput` and `compilerOutputHasErrors`
+        // TODO There is no technical ability to extract `toolOutput` and `toolOutputHasErrors`
         //      from C-interop tool invocation at the moment. This should be fixed in the future.
-        CompilerCallResult(exitCode = ExitCode.OK, compilerOutput = "", compilerOutputHasErrors = false, duration)
+        CompilationToolCallResult(exitCode = ExitCode.OK, toolOutput = "", toolOutputHasErrors = false, duration)
     } else {
-        // in currently tested usecases, cinterop must return no args for the subsequent compiler call
-        CompilerCallResult(
+        CompilationToolCallResult(
             exitCode = ExitCode.COMPILATION_ERROR,
-            compilerOutput = possibleSubsequentCompilerInvocationArgs.joinToString(" "),
-            compilerOutputHasErrors = true,
+            toolOutput = possibleSubsequentCompilerInvocationArgs.joinToString(" "),
+            toolOutputHasErrors = true,
             duration
         )
     }

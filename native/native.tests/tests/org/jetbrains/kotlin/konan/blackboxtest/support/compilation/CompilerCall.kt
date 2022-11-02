@@ -16,7 +16,7 @@ import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
-internal fun callCompiler(compilerArgs: Array<String>, kotlinNativeClassLoader: ClassLoader): CompilerCallResult {
+internal fun callCompiler(compilerArgs: Array<String>, kotlinNativeClassLoader: ClassLoader): CompilationToolCallResult {
     val compilerXmlOutput: ByteArrayOutputStream
     val exitCode: ExitCode
 
@@ -60,12 +60,12 @@ internal fun callCompiler(compilerArgs: Array<String>, kotlinNativeClassLoader: 
         compilerOutput = outputStream.toString(Charsets.UTF_8.name())
     }
 
-    return CompilerCallResult(exitCode, compilerOutput, messageCollector.hasErrors(), duration)
+    return CompilationToolCallResult(exitCode, compilerOutput, messageCollector.hasErrors(), duration)
 }
 
-internal data class CompilerCallResult(
+internal data class CompilationToolCallResult(
     val exitCode: ExitCode,
-    val compilerOutput: String,
-    val compilerOutputHasErrors: Boolean,
+    val toolOutput: String,
+    val toolOutputHasErrors: Boolean,
     val duration: Duration
 )
