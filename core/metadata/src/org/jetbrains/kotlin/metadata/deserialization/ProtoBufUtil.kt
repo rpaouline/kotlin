@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.metadata.deserialization
 
 import org.jetbrains.kotlin.metadata.ProtoBuf
 import org.jetbrains.kotlin.protobuf.GeneratedMessageLite
+import org.jetbrains.kotlinx.serialization.compiler.extensions.SerializationPluginMetadataExtensions
 
 fun <M : GeneratedMessageLite.ExtendableMessage<M>, T> GeneratedMessageLite.ExtendableMessage<M>.getExtensionOrNull(
     extension: GeneratedMessageLite.GeneratedExtension<M, T>
@@ -25,7 +26,17 @@ val ProtoBuf.ClassOrBuilder.propertyProgramOrderMap: Map<Int, Int>
 
 val ProtoBuf.ClassOrBuilder.propertyListInDeclarationOrder: List<ProtoBuf.Property>
     get() {
-        val properties = propertyList
-        val order = propertyProgramOrderMap.takeIf { it.isNotEmpty() } ?: return properties
-        return properties.withIndex().sortedBy { order[it.index] }.map { it.value }
+        val order = propertyProgramOrderMap.takeIf { it.isNotEmpty() } ?: return tryComputeDeclarationOrderBySerializationExtension()
+        return propertyList.withIndex().sortedBy { order[it.index] }.map { it.value }
     }
+
+private fun ProtoBuf.ClassOrBuilder.tryComputeDeclarationOrderBySerializationExtension(): List<ProtoBuf.Property> {
+    val properties = propertyList
+    val order = getExtension(SerializationPluginMetadataExtensions.propertiesNamesInProgramOrder)
+        .takeIf { it.isNotEmpty() }
+        ?: return properties
+    val propertiesByName = properties.groupBy { it.name }
+    return order.flatMap { propertiesByName[it] ?: emptyList() }.also {
+        assert(it.size == properties.size)
+    }
+}
