@@ -17,18 +17,18 @@ abstract class AbstractNativeInteropIndexerBaseTest : AbstractNativeSimpleTest()
     private val buildDir: File get() = testRunSettings.get<SimpleTestDirectories>().testBuildDir
     internal val targets: KotlinNativeTargets get() = testRunSettings.get<KotlinNativeTargets>()
 
-    internal fun TestCase.cinteropToLibrary(vararg dependencies: TestCompilationDependency<*>): TestCompilationResult.Success<out KLIB> {
+    internal fun TestCase.cinteropToLibrary(): TestCompilationResult.Success<out KLIB> {
+        modules.singleOrNull()
         val compilation = CInteropCompilation(
-            settings = testRunSettings,
+            targets = targets,
             freeCompilerArgs = freeCompilerArgs,
-            sourceModules = modules,
-            dependencies = dependencies.toList(),
+            defFile = modules.singleOrNull()!!.files.singleOrNull()!!.location,
             expectedArtifact = toLibraryArtifact()
         )
         return compilation.result.assertSuccess()
     }
 
-    private fun TestCase.toLibraryArtifact() = KLIB(buildDir.resolve(modules.first().name + ".klib"))
+    private fun TestCase.toLibraryArtifact() = KLIB(buildDir.resolve(modules.singleOrNull()!!.name + ".klib"))
 
     internal fun generateCInteropTestCaseWithSingleDef(defFile: File, extraArgs: List<String>): TestCase {
         val moduleName: String = defFile.name

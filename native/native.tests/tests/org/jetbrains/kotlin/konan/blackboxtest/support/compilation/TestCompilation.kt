@@ -18,12 +18,9 @@ import org.jetbrains.kotlin.konan.blackboxtest.support.util.buildArgs
 import org.jetbrains.kotlin.konan.blackboxtest.support.util.flatMapToSet
 import org.jetbrains.kotlin.konan.blackboxtest.support.util.mapToSet
 import org.jetbrains.kotlin.konan.properties.resolvablePropertyList
-import org.jetbrains.kotlin.test.services.JUnit5Assertions.assertEquals
 import org.jetbrains.kotlin.test.services.JUnit5Assertions.assertTrue
 import org.jetbrains.kotlin.test.services.JUnit5Assertions.fail
 import java.io.File
-import kotlin.time.ExperimentalTime
-import kotlin.time.measureTime
 
 internal abstract class TestCompilation<A : TestCompilationArtifact> {
     abstract val result: TestCompilationResult<out A>
@@ -74,7 +71,7 @@ internal abstract class BasicCompilation<A : TestCompilationArtifact>(
 
     protected open fun postCompileCheck() = Unit
 
-    protected open fun doCompile(): TestCompilationResult.ImmediateResult<out A> {
+    private fun doCompile(): TestCompilationResult.ImmediateResult<out A> {
         val compilerArgs = buildArgs {
             applyCommonArgs()
             applySpecificArgs(this)
@@ -189,57 +186,46 @@ internal class LibraryCompilation(
 }
 
 internal class CInteropCompilation(
-    val settings: Settings,
+    targets: KotlinNativeTargets,
     freeCompilerArgs: TestCompilerArgs,
-    sourceModules: Collection<TestModule>,
-    dependencies: Iterable<TestCompilationDependency<*>>,
+    defFile: File,
     expectedArtifact: KLIB
-) : SourceBasedCompilation<KLIB>(
-    targets = settings.get(),
-    home = settings.get(),
-    classLoader = settings.get(),
-    optimizationMode = settings.get(),
-    memoryModel = settings.get(),
-    threadStateChecker = settings.get(),
-    sanitizer = settings.get(),
-    gcType = settings.get(),
-    gcScheduler = settings.get(),
-    freeCompilerArgs = freeCompilerArgs,
-    sourceModules = sourceModules,
-    dependencies = CategorizedDependencies(dependencies),
-    expectedArtifact = expectedArtifact
-) {
-    override val binaryOptions get() = BinaryOptions.RuntimeAssertionsMode.defaultForTesting
+) : TestCompilation<KLIB>() {
 
-    override fun doCompile(): TestCompilationResult.ImmediateResult<out KLIB> {
+    override val result: TestCompilationResult<out KLIB> by lazy {
         val extraArgsArray = freeCompilerArgs.compilerArgs.toTypedArray()
-        val maybeCompilerArgs: Array<String>?
-
-        @OptIn(ExperimentalTime::class)
-        val duration = measureTime {
-            maybeCompilerArgs = invokeCInterop(
+        val loggedCInteropParameters = LoggedData.CInteropParameters(extraArgs = extraArgsArray, defFile = defFile)
+        val (loggedCInteropCall: LoggedData, immediateResult: TestCompilationResult.ImmediateResult<out KLIB>) = try {
+            val (exitCode, cinteropOutput, cinteropOutputHasErrors, duration) = invokeCInterop(
                 targets,
-                sourceModules.first().files.first().location,
+                defFile,
                 expectedArtifact.klibFile,
                 extraArgsArray
             )
-        }
-        assertEquals(null, maybeCompilerArgs)  // check that compiler invocation is not needed
 
-        // TODO  Actual compiler output is not included now into `compilerOutput` and `compilerOutputHasErrors`
-        // TODO  since there is no technical ability to extract them from C-interop tool invocation at the moment.
-        // TODO  This should be fixed in the future
-        val loggedCInteropCall = LoggedData.CompilationToolCall(
-            toolName = "CINTEROP",
-            parameters = LoggedData.CInteropParameters(extraArgs = extraArgsArray, sourceModules = sourceModules),
-            exitCode = ExitCode.OK,
-            compilerOutput = maybeCompilerArgs?.joinToString() ?: "<empty>",
-            compilerOutputHasErrors = false,
-            duration = duration
-        )
+            val loggedCompilationToolCall = LoggedData.CompilationToolCall(
+                toolName = "CINTEROP",
+                parameters = loggedCInteropParameters,
+                exitCode = exitCode,
+                compilerOutput = cinteropOutput,
+                compilerOutputHasErrors = cinteropOutputHasErrors,
+                duration = duration
+            )
+            val res = if (exitCode != ExitCode.OK || cinteropOutputHasErrors)
+                TestCompilationResult.CompilerFailure(loggedCompilationToolCall)
+            else
+                TestCompilationResult.Success(expectedArtifact, loggedCompilationToolCall)
+
+            loggedCompilationToolCall to res
+        } catch (unexpectedThrowable: Throwable) {
+            val loggedFailure = LoggedData.CompilerCallUnexpectedFailure(loggedCInteropParameters, unexpectedThrowable)
+            val res = TestCompilationResult.UnexpectedFailure(loggedFailure)
+
+            loggedFailure to res
+        }
         expectedArtifact.logFile.writeText(loggedCInteropCall.toString())
 
-        return TestCompilationResult.Success(expectedArtifact, loggedCInteropCall)
+        immediateResult
     }
 }
 

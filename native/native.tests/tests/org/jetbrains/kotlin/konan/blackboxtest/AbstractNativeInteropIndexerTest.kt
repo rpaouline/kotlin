@@ -57,12 +57,12 @@ abstract class AbstractNativeInteropIndexerTest : AbstractNativeInteropIndexerBa
         else
             getGoldenFile(testPathFull)
         val fmodulesArgs = if (fmodules) listOf("-compiler-option", "-fmodules") else listOf()
-        val includeFrameworkArgs = if (testDataDir.name.startsWith("framework"))
+        val includeArgs = if (testDataDir.name.startsWith("framework"))
             listOf("-compiler-option", "-F${testDataDir.canonicalPath}")
         else
             listOf("-compiler-option", "-I${includeFolder.canonicalPath}")
 
-        val testCase: TestCase = generateCInteropTestCaseWithSingleDef(defFile, includeFrameworkArgs + fmodulesArgs)
+        val testCase: TestCase = generateCInteropTestCaseWithSingleDef(defFile, includeArgs + fmodulesArgs)
         val testCompilationResult = testCase.cinteropToLibrary()
         val klibContents = testCompilationResult.resultingArtifact.getContents()
 

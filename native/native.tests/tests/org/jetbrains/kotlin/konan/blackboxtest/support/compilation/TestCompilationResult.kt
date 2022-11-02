@@ -19,7 +19,7 @@ internal sealed interface TestCompilationResult<A : TestCompilationArtifact> {
         ImmediateResult<A>
 
     data class CompilerFailure(override val loggedData: LoggedData.CompilationToolCall) : Failure
-    data class UnexpectedFailure(override val loggedData: LoggedData.CompilerCallUnexpectedFailure) : Failure
+    data class UnexpectedFailure(override val loggedData: LoggedData) : Failure
     data class DependencyFailures(val causes: Set<Failure>) : TestCompilationResult<Nothing>
 
     companion object {

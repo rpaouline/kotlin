@@ -83,28 +83,16 @@ internal abstract class LoggedData {
 
     class CInteropParameters(
         private val extraArgs: Array<String>,
-        private val sourceModules: Collection<TestModule>,
+        private val defFile: File,
         private val environment: JVMEnvironment = JVMEnvironment() // Capture environment.
     ) : LoggedData() {
-        private val testDataFiles: List<File>
-            get() = buildList {
-                sourceModules.forEach { module ->
-                    if (module !is TestModule.Exclusive) return@forEach
-                    this += (module.testCase.id as? TestCaseId.TestDataFile)?.file ?: return@forEach
-                }
-                sort()
-            }
-
         override fun computeText() = buildString {
             appendArguments("CINTEROP INVOCATION EXTRA ARGUMENTS:", extraArgs.toList())
             appendLine()
             appendLine(environment)
 
-            val testDataFiles = testDataFiles
-            if (testDataFiles.isNotEmpty()) {
-                appendLine()
-                appendList("TEST DATA FILES (COMPILED TOGETHER):", testDataFiles)
-            }
+            appendLine()
+            appendLine("TEST DEF FILE: ${defFile.canonicalPath}")
         }
     }
 
@@ -140,7 +128,7 @@ internal abstract class LoggedData {
         }
     }
 
-    class CompilerCallUnexpectedFailure(parameters: CompilerParameters, throwable: Throwable) : UnexpectedFailure(parameters, throwable)
+    class CompilerCallUnexpectedFailure(parameters: LoggedData, throwable: Throwable) : UnexpectedFailure(parameters, throwable)
 
     class TestRunParameters(
         private val compilationToolCall: CompilationToolCall,
