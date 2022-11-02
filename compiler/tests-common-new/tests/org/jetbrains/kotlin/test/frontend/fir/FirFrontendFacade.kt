@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.cli.jvm.compiler.PsiBasedProjectFileSearchScope
 import org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM
 import org.jetbrains.kotlin.cli.jvm.compiler.VfsBasedProjectEnvironment
+import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.checkers.registerExtendedCommonCheckers
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
@@ -27,7 +28,6 @@ import org.jetbrains.kotlin.platform.jvm.isJvm
 import org.jetbrains.kotlin.platform.konan.isNative
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.test.TargetBackend
-import org.jetbrains.kotlin.test.directives.ConfigurationDirectives.USE_IR_ACTUALIZER
 import org.jetbrains.kotlin.test.directives.FirDiagnosticsDirectives
 import org.jetbrains.kotlin.test.directives.model.DirectivesContainer
 import org.jetbrains.kotlin.test.model.FrontendFacade
@@ -97,7 +97,7 @@ class FirFrontendFacade(
                 val projectFileSearchScope = PsiBasedProjectFileSearchScope(ProjectScope.getLibrariesScope(project))
                 val packagePartProvider = projectEnvironment.getPackagePartProvider(projectFileSearchScope)
 
-                val useIrActualizer = module.directives.contains(USE_IR_ACTUALIZER)
+                val isMpp = module.languageVersionSettings.supportsFeature(LanguageFeature.MultiPlatformProjects)
                 if (module.targetPlatform.isCommon()) {
                     FirCommonSessionFactory.createLibrarySession(
                         moduleName,
@@ -107,7 +107,7 @@ class FirFrontendFacade(
                         projectFileSearchScope,
                         packagePartProvider,
                         languageVersionSettings,
-                        useDependentLibraryProviders = useIrActualizer
+                        useDependentLibraryProviders = isMpp
                     )
                 } else {
                     FirJvmSessionFactory.createLibrarySession(
@@ -118,7 +118,7 @@ class FirFrontendFacade(
                         projectFileSearchScope,
                         packagePartProvider,
                         languageVersionSettings,
-                        useDependentLibraryProviders = useIrActualizer
+                        useDependentLibraryProviders = isMpp
                     )
                 }
             }
@@ -209,7 +209,7 @@ class FirFrontendFacade(
         moduleInfoProvider.registerModuleData(module, session.moduleData)
 
         val enablePluginPhases = FirDiagnosticsDirectives.ENABLE_PLUGIN_PHASES in module.directives
-        val useIrActualizer = module.directives.contains(USE_IR_ACTUALIZER)
+        val isMpp = module.languageVersionSettings.supportsFeature(LanguageFeature.MultiPlatformProjects)
         val firAnalyzerFacade = FirAnalyzerFacade(
             session,
             languageVersionSettings,
@@ -218,8 +218,8 @@ class FirFrontendFacade(
             IrGenerationExtension.getInstances(project),
             lightTreeEnabled,
             enablePluginPhases,
-            generateSignatures = module.targetBackend == TargetBackend.JVM_IR_SERIALIZE || useIrActualizer,
-            considerDependencyFiles = !useIrActualizer
+            generateSignatures = module.targetBackend == TargetBackend.JVM_IR_SERIALIZE || isMpp,
+            considerDependencyFiles = !isMpp
         )
         val firFiles = firAnalyzerFacade.runResolution()
         val filesMap = firFiles.mapNotNull { firFile ->
