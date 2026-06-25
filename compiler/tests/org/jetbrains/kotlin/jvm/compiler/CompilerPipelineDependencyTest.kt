@@ -25,6 +25,7 @@ import org.junit.Test
  */
 class CompilerPipelineDependencyTest {
 
+    @Suppress("PrivatePropertyName")
     private val WARNING_MESSAGE = """
         =============================================================================
         CRITICAL COMPILER API BREAKAGE DETECTED!
@@ -44,7 +45,7 @@ class CompilerPipelineDependencyTest {
         "org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments",
         "org.jetbrains.kotlin.cli.pipeline.AbstractCliPipeline",
         "org.jetbrains.kotlin.cli.pipeline.CheckCompilationErrors",
-        "org.jetbrains.kotlin.cli.pipeline.CheckCompilationErrors\$CheckDiagnosticCollector",
+        $$"org.jetbrains.kotlin.cli.pipeline.CheckCompilationErrors$CheckDiagnosticCollector",
         "org.jetbrains.kotlin.cli.pipeline.jvm.JvmConfigurationPipelinePhase",
         "org.jetbrains.kotlin.cli.pipeline.jvm.JvmFrontendPipelinePhase",
         "org.jetbrains.kotlin.cli.pipeline.jvm.JvmFir2IrPipelinePhase",
@@ -95,14 +96,14 @@ class CompilerPipelineDependencyTest {
 
     @Test
     fun testCriticalFieldsAndMethods() {
-        for ((className, fields) in criticalFields) {
-            for ((fieldName, expectedType) in fields) {
+        for ([className, fields] in criticalFields) {
+            for ([fieldName, expectedType] in fields) {
                 assertFieldExists(className, fieldName, expectedType)
             }
         }
 
-        for ((className, methods) in criticalMethods) {
-            for ((methodName, parameterTypes) in methods) {
+        for ([className, methods] in criticalMethods) {
+            for ([methodName, parameterTypes] in methods) {
                 assertMethodExists(className, methodName, parameterTypes)
             }
         }
@@ -110,7 +111,7 @@ class CompilerPipelineDependencyTest {
 
     @Test
     fun testReflectionFailureCases() {
-        // 1. Verify ClassNotFoundException triggers AssertionError with warning message
+        // 1. Verify ClassNotFoundException triggers AssertionError with a warning message
         try {
             assertClassExists("org.jetbrains.kotlin.cli.SomeNonExistingClass")
             throw AssertionError("Expected AssertionError was not thrown for non-existing class.")
@@ -118,7 +119,7 @@ class CompilerPipelineDependencyTest {
             assertWarningMessagePresent(e)
         }
 
-        // 2. Verify NoSuchFieldException triggers AssertionError with warning message
+        // 2. Verify NoSuchFieldException triggers AssertionError with a warning message
         try {
             assertFieldExists(
                 "org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments",
@@ -130,7 +131,7 @@ class CompilerPipelineDependencyTest {
             assertWarningMessagePresent(e)
         }
 
-        // 3. Verify incompatible field type triggers AssertionError with warning message
+        // 3. Verify an incompatible field type triggers AssertionError with a warning message
         try {
             assertFieldExists(
                 "org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments",
@@ -142,7 +143,7 @@ class CompilerPipelineDependencyTest {
             assertWarningMessagePresent(e)
         }
 
-        // 4. Verify NoSuchMethodException triggers AssertionError with warning message
+        // 4. Verify NoSuchMethodException triggers AssertionError with a warning message
         try {
             assertMethodExists(
                 "org.jetbrains.kotlin.cli.pipeline.AbstractCliPipeline",
@@ -186,15 +187,18 @@ class CompilerPipelineDependencyTest {
                 if (!expectedType.isAssignableFrom(method.returnType)) {
                     throw AssertionError("CRITICAL API BREAKAGE: Property getter $getterName in class $className has return type ${method.returnType.name}, expected $expectedTypeFqn.\n$WARNING_MESSAGE")
                 }
-            } catch (me: NoSuchMethodException) {
-                throw AssertionError("CRITICAL API BREAKAGE: Field $fieldName (or getter $getterName) not found in class $className.\n$WARNING_MESSAGE", e)
+            } catch (_: NoSuchMethodException) {
+                throw AssertionError(
+                    "CRITICAL API BREAKAGE: Field $fieldName (or getter $getterName) not found in class $className.\n$WARNING_MESSAGE",
+                    e
+                )
             }
         }
     }
 
-    private fun assertMethodExists(className: String, methodName: String, parameterTypesFqns: List<String>) {
+    private fun assertMethodExists(className: String, methodName: String, parameterTypesFqNames: List<String>) {
         val clazz = Class.forName(className)
-        val parameterTypes = parameterTypesFqns.map { Class.forName(it) }
+        val parameterTypes = parameterTypesFqNames.map { Class.forName(it) }
 
         var currentClazz: Class<*>? = clazz
         var method: java.lang.reflect.Method? = null
@@ -202,7 +206,7 @@ class CompilerPipelineDependencyTest {
             try {
                 method = currentClazz.getDeclaredMethod(methodName, *parameterTypes.toTypedArray())
                 break // found it
-            } catch (e: NoSuchMethodException) {
+            } catch (_: NoSuchMethodException) {
                 currentClazz = currentClazz.superclass
             }
         }
@@ -214,7 +218,7 @@ class CompilerPipelineDependencyTest {
             while (currentClazz != null) {
                 val methods = currentClazz.declaredMethods.filter { it.name == methodName && it.parameterCount == parameterTypes.size }
                 match = methods.firstOrNull { m ->
-                    m.parameterTypes.zip(parameterTypes).all { (paramType, expectedType) ->
+                    m.parameterTypes.zip(parameterTypes).all { [paramType, expectedType] ->
                         paramType.isAssignableFrom(expectedType)
                     }
                 }
@@ -223,7 +227,7 @@ class CompilerPipelineDependencyTest {
             }
 
             if (match == null) {
-                val paramsStr = parameterTypesFqns.joinToString()
+                val paramsStr = parameterTypesFqNames.joinToString()
                 throw AssertionError("CRITICAL API BREAKAGE: Method $methodName($paramsStr) not found in class hierarchy of $className.\n$WARNING_MESSAGE")
             }
         }
